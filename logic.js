@@ -61,7 +61,7 @@ function stopTimer() {
 
 function startTimer() {
     stopTimer(); 
-    timeLeft = 10;
+    timeLeft = 15;
     keyPressHistory = []; // Reset key history
     timerEl.textContent = timeLeft;
     timerEl.className = ''; 
