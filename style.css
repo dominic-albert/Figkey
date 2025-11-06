@@ -477,7 +477,7 @@ header {
     100% { opacity: 1; transform: scale(1); }
 }
 .badge-gold { color: #FFD700; }
-.badge-silver { color: #C0C0C0; }
+.badge-silver { color: #a6a6a6; }
 .badge-bronze { color: #CD7F32; }
 
 /* --- Footer --- */
