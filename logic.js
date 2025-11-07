@@ -403,4 +403,17 @@ btnReveal.addEventListener('click', revealAnswer);
 btnOK.addEventListener('click', handleOKClick); 
 
 // --- 8. Start the App ---
+
+// NEW: Check for mobile device on load
+if (window.innerWidth <= 768) { 
+    // This is a common breakpoint for tablets and phones
+    
+    alert("This site is only for desktop.");
+
+    // We can also hide the game to prevent it from being used
+    document.getElementById('app-container').style.display = 'none';
+} else {
+    // If on desktop, start the game normally
+    resetGame();
+}
 resetGame();
