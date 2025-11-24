@@ -1,6 +1,5 @@
 /* 3. THE JAVASCRIPT (The Brains) */
 
-// --- 1. Import the shortcuts list from its own file ---
 import { shortcuts } from './shortcuts.js';
 
 // --- 2. Get Elements ---
@@ -11,19 +10,13 @@ const welcomeContainer = document.getElementById('welcome-container');
 const quizContainer = document.getElementById('quiz-container');
 const resultsContainer = document.getElementById('results-container');
 
-// Difficulty buttons
+// Buttons
 const difficultyButtons = document.querySelectorAll('.difficulty-btn');
-
-// Results buttons
 const btnPlayAgain = document.getElementById('play-again-btn');
-const btnTryHard = document.getElementById('try-hard-btn'); // Upsell button
-
-// Header nav buttons
+const btnTryHard = document.getElementById('try-hard-btn');
 const btnRetake = document.getElementById('btn-retake');
 const btnHelp = document.getElementById('btn-help');
 const btnExit = document.getElementById('btn-exit');
-
-// Quiz buttons
 const btnReveal = document.getElementById('reveal-btn'); 
 const btnOK = document.getElementById('ok-btn'); 
 
@@ -36,6 +29,7 @@ const finalScoreEl = document.getElementById('final-score');
 const progressBar = document.getElementById('progress-bar');
 const badgeDisplay = document.getElementById('badge-display');
 const timerEl = document.getElementById('timer'); 
+const keyVisualizer = document.getElementById('key-visualizer'); // NEW
 
 // --- 3. State Variables ---
 let currentQuestion = {};
@@ -49,20 +43,25 @@ let currentDifficulty = '';
 
 // Timer variables
 let timerInterval;
-let timeLeft = 15; // <-- UPDATED TO 15
-let keyPressHistory = []; // For "0+0" shortcut
+let timeLeft = 15;
+let keyPressHistory = []; 
+
+// NEW: Active Keys State for Visualizer
+let activeKeys = new Set(); 
 
 // --- 4. Core Game Functions ---
 
-// Timer Functions
 function stopTimer() {
     clearInterval(timerInterval);
 }
 
 function startTimer() {
     stopTimer(); 
-    timeLeft = 15; // <-- UPDATED TO 15
-    keyPressHistory = []; // Reset key history
+    timeLeft = 15;
+    keyPressHistory = []; 
+    activeKeys.clear(); // Clear visualizer
+    renderKeys();      // Update UI
+    
     timerEl.textContent = timeLeft;
     timerEl.className = ''; 
     
@@ -79,7 +78,7 @@ function startTimer() {
         
         if (timeLeft === 0) {
             stopTimer();
-            handleIncorrectAnswer(); 
+            handleTimeout(); // CHANGED: Calls specific timeout function
         }
     }, 1000);
 }
@@ -92,15 +91,10 @@ function startGame(difficulty) {
     // Filter shortcuts
     let filtered = shortcuts.filter(s => s.difficulty.toLowerCase() === difficulty);
     
-    // If list is too small
     if (filtered.length < totalQuestions) {
-         console.warn(`Warning: Not enough questions for ${difficulty}. Repeating questions.`);
-         // If no questions at all, use 'easy' as fallback
          if(filtered.length === 0) {
-            console.error(`No questions found for ${difficulty}, defaulting to 'easy'.`);
             filtered = shortcuts.filter(s => s.difficulty.toLowerCase() === 'easy');
          }
-         // Fill up the list by repeating
          let i = 0;
          while(filtered.length < totalQuestions && filtered.length > 0) {
             filtered.push(filtered[i % filtered.length]);
@@ -108,16 +102,13 @@ function startGame(difficulty) {
          }
     }
     
-    // 1. Shuffle the ENTIRE filtered list first
     for (let i = filtered.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
         [filtered[i], filtered[j]] = [filtered[j], filtered[i]];
     }
     
-    // 2. THEN, take the first 10 questions
     quizShortcuts = filtered.slice(0, totalQuestions);
     
-    // Show/Hide screens
     welcomeContainer.classList.add('hidden');
     resultsContainer.classList.add('hidden');
     quizContainer.classList.remove('hidden');
@@ -131,12 +122,15 @@ function getNewQuestion() {
     if (questionCount < totalQuestions) {
         updateStats(); 
         currentQuestion = quizShortcuts[questionCount];
-        
-        // Use the 'name' field directly, which now excludes the category
         questionEl.textContent = currentQuestion.name;
         
         answerEl.textContent = '';
         answerEl.className = '';
+        
+        // Reset Visualizer
+        activeKeys.clear();
+        renderKeys();
+
         btnReveal.classList.add('hidden');
         btnOK.classList.add('hidden'); 
         isChecking = false; 
@@ -162,7 +156,6 @@ function showResults() {
 
     finalScoreEl.textContent = `You got ${score} out of ${totalQuestions} correct.`;
     
-    // Hide upsell button by default
     btnTryHard.classList.add('hidden');
     
     let badgeHTML = '';
@@ -177,7 +170,6 @@ function showResults() {
     }
     badgeDisplay.innerHTML = badgeHTML;
     
-    // Upsell logic
     if (currentDifficulty === 'easy' && score >= 8) {
         btnTryHard.classList.remove('hidden');
     }
@@ -185,6 +177,7 @@ function showResults() {
 
 function resetGame() {
     stopTimer();
+    activeKeys.clear(); // Clear keys on reset
     resultsContainer.classList.add('hidden');
     quizContainer.classList.add('hidden');
     quizHeader.classList.add('hidden');
@@ -193,33 +186,53 @@ function resetGame() {
     body.classList.add('diagonal-bg'); 
 }
 
-// --- Helper function to show answer ---
+// --- Helper Functions ---
+
 function formatKey(key) {
-    if (key === 'metaKey') return (currentOS === 'mac') ? '⌘' : 'Ctrl';
-    if (key === 'ctrlKey') return 'Ctrl';
-    if (key === 'shiftKey') return '⇧';
-    if (key === 'altKey') return (currentOS === 'mac') ? '⌥' : 'Alt';
-    if (key === 'escape') return 'Esc';
-    if (key === 'enter') return '↩';
-    if (key === 'backspace') return (currentOS ==='mac') ? '⌫' : 'Backspace'; // Updated
-    if (key === 'delete') return 'Del'; // Updated
-    if (key === 'pageup') return 'Page Up'; // Updated
-    if (key === 'pagedown') return 'Page Down'; // Updated
-    if (key === 'home') return 'Home'; // Updated
-    if (key === 'end') return 'End'; // Updated
-    if (key === 'tab') return 'Tab';
-    if (key === 'space') return 'Space';
-    if (key === '=') return '+'; // Handle the zoom-in key
-    return key.toUpperCase();
+    if (key === 'metaKey' || key === 'Meta') return (currentOS === 'mac') ? '⌘' : 'Win';
+    if (key === 'ctrlKey' || key === 'Control') return 'Ctrl';
+    if (key === 'shiftKey' || key === 'Shift') return '⇧';
+    if (key === 'altKey' || key === 'Alt') return (currentOS === 'mac') ? '⌥' : 'Alt';
+    if (key === 'escape' || key === 'Escape') return 'Esc';
+    if (key === 'enter' || key === 'Enter') return '↵';
+    if (key === 'backspace' || key === 'Backspace') return '⌫';
+    if (key === 'delete' || key === 'Delete') return 'Del';
+    if (key === 'tab' || key === 'Tab') return 'Tab';
+    if (key === ' ' || key === 'space' || key === 'Space') return 'Space';
+    // For single letters, capitalize them
+    if (key.length === 1) return key.toUpperCase();
+    return key;
 }
 
 function formatKeys(keys) {
-    // Special case for "0+0"
     if (keys.join('') === '00') return '0 + 0';
     return keys.map(formatKey).join(' + ');
 }
 
-// --- Function to handle reveal logic ---
+// --- NEW: Visualizer Renderer ---
+function renderKeys() {
+    if (activeKeys.size === 0) {
+        keyVisualizer.innerHTML = '<span class="key-placeholder">Start typing...</span>';
+        return;
+    }
+    
+    // Sort keys to put modifiers first (UX preference)
+    const modifiers = ['Control', 'Meta', 'Alt', 'Shift'];
+    const sortedKeys = Array.from(activeKeys).sort((a, b) => {
+        const aIsMod = modifiers.includes(a);
+        const bIsMod = modifiers.includes(b);
+        if (aIsMod && !bIsMod) return -1;
+        if (!aIsMod && bIsMod) return 1;
+        return 0;
+    });
+
+    keyVisualizer.innerHTML = sortedKeys.map(key => {
+        return `<div class="key-cap active">${formatKey(key)}</div>`;
+    }).join('');
+}
+
+// --- Answer Handling ---
+
 function revealAnswer() {
     btnReveal.classList.add('hidden');
     const answerKeys = currentQuestion[currentOS];
@@ -227,14 +240,11 @@ function revealAnswer() {
     answerEl.textContent = `Correct: ${formattedAnswer}`;
     answerEl.className = 'info'; 
     btnOK.classList.remove('hidden'); 
-    
     questionCount++;
 }
 
-// --- Function to handle "OK" click ---
 function handleOKClick() {
     btnOK.classList.add('hidden');
-    
     if (questionCount < totalQuestions) {
         getNewQuestion();
     } else {
@@ -243,7 +253,6 @@ function handleOKClick() {
     }
 }
 
-// Separate functions for correct/incorrect
 function handleCorrectAnswer() {
     stopTimer();
     score++;
@@ -252,6 +261,12 @@ function handleCorrectAnswer() {
     scoreDisplay.classList.add('score-update');
     setTimeout(() => scoreDisplay.classList.remove('score-update'), 400);
     
+    // Clear visualizer after a short delay
+    setTimeout(() => {
+        activeKeys.clear();
+        renderKeys();
+    }, 1000);
+
     questionCount++;
     setTimeout(() => {
         getNewQuestion();
@@ -266,7 +281,38 @@ function handleIncorrectAnswer() {
     isChecking = true; 
 }
 
-// --- 5. The Key Listener ---
+// NEW: Timeout specific handler
+function handleTimeout() {
+    stopTimer();
+    answerEl.textContent = 'Time Out!'; // Custom text
+    answerEl.className = 'timeout';    // Custom class (Orange)
+    btnReveal.classList.remove('hidden');
+    isChecking = true;
+}
+
+// --- 5. Key Listeners ---
+
+// NEW: Global keyup listener to clear visualizer
+document.addEventListener('keyup', (e) => {
+    // Remove the key from the set
+    if (activeKeys.has(e.key)) {
+        activeKeys.delete(e.key);
+        renderKeys();
+    }
+    // Handle standard modifier release events specially if needed
+    if (e.key === 'Control') activeKeys.delete('Control');
+    if (e.key === 'Shift') activeKeys.delete('Shift');
+    if (e.key === 'Alt') activeKeys.delete('Alt');
+    if (e.key === 'Meta') activeKeys.delete('Meta');
+    renderKeys();
+});
+
+// Window blur listener to clear keys if user Tabs away
+window.addEventListener('blur', () => {
+    activeKeys.clear();
+    renderKeys();
+});
+
 document.addEventListener('keydown', function(e) {
     const modifierKeys = ["Control", "Shift", "Alt", "Meta"];
     
@@ -274,23 +320,26 @@ document.addEventListener('keydown', function(e) {
         return;
     }
 
-    // Don't prevent default for modifiers, but return
+    // --- VISUALIZER LOGIC (Top Priority) ---
+    // Add key to set and render immediately
+    if (!activeKeys.has(e.key)) {
+        activeKeys.add(e.key);
+        renderKeys();
+    }
+    
+    // Don't check answer on modifiers alone
     if (modifierKeys.includes(e.key)) {
         return;
     }
     
-    // Check for empty question (edge case)
-    if (!currentQuestion || !currentQuestion[currentOS]) {
-        console.error("No current question loaded.");
-        return;
-    }
+    if (!currentQuestion || !currentQuestion[currentOS]) return;
 
     e.preventDefault();
     
     const correctAnswer = currentQuestion[currentOS];
     let isCorrect = true;
 
-    // --- Special Case: "0+0" for opacity ---
+    // --- Special Case: "0+0" ---
     if (correctAnswer.join('') === '00') {
         if (e.key === '0' && !e.metaKey && !e.ctrlKey && !e.shiftKey && !e.altKey) {
             keyPressHistory.push('0');
@@ -298,51 +347,33 @@ document.addEventListener('keydown', function(e) {
                 isChecking = true;
                 handleCorrectAnswer();
             }
-            // If it's just the first '0', don't do anything yet
         } else {
-            // Wrong key pressed during "0+0"
             isChecking = true;
             handleIncorrectAnswer();
         }
-        return; // Exit listener
+        return; 
     }
-    // --- End Special Case ---
 
-    // If not special case, lock checking immediately
+    // Standard checking logic
     isChecking = true; 
-    
-    // Get the main (non-modifier) key from the answer
     const mainKey = correctAnswer.find(k => !['metaKey', 'ctrlKey', 'shiftKey', 'altKey'].includes(k));
 
-    // Check main key
     if (mainKey && mainKey.toLowerCase() !== e.key.toLowerCase()) {
         let keyMatch = false;
-         
-        // Special check for '+' key which is '='
-        if (mainKey === '=' && e.key === '+') {
-            keyMatch = true;
-        }
-        // Special check for 'Space'
-        else if (mainKey === 'space' && e.code === 'Space') {
-            keyMatch = true;
-        }
+        if (mainKey === '=' && e.key === '+') keyMatch = true;
+        else if (mainKey === 'space' && e.code === 'Space') keyMatch = true;
         
-        if (!keyMatch) {
-            isCorrect = false;
-        }
+        if (!keyMatch) isCorrect = false;
 
     } else if (!mainKey) {
-         // Handle shortcuts that are ONLY modifiers (e.g., "Alt")
-         isCorrect = true; // Assume true, modifiers check will finalize
+         isCorrect = true; 
     }
     
-    // Check modifier keys
     if (correctAnswer.includes('metaKey') !== e.metaKey) isCorrect = false;
     if (correctAnswer.includes('ctrlKey') !== e.ctrlKey) isCorrect = false;
     if (correctAnswer.includes('shiftKey') !== e.shiftKey) isCorrect = false;
     if (correctAnswer.includes('altKey') !== e.altKey) isCorrect = false;
     
-    // --- 6. Show Feedback ---
     if (isCorrect) {
         handleCorrectAnswer();
     } else {
@@ -350,47 +381,24 @@ document.addEventListener('keydown', function(e) {
     }
 });
 
-// --- 7. Button Event Listeners ---
-
-// Difficulty Buttons
+// --- 7. Button Listeners ---
 difficultyButtons.forEach(button => {
     button.addEventListener('click', (e) => {
-        const difficulty = e.target.dataset.difficulty;
-        startGame(difficulty);
+        startGame(e.target.dataset.difficulty);
     });
 });
 
-// Results
 btnPlayAgain.addEventListener('click', resetGame);
+btnTryHard.addEventListener('click', () => startGame('hard'));
 
-// Upsell button listener
-btnTryHard.addEventListener('click', () => {
-    startGame('hard');
-});
-
-// Header Nav
 btnRetake.addEventListener('click', (e) => {
     e.preventDefault(); 
-    if (currentDifficulty) { // Only retake if a difficulty was chosen
-        startGame(currentDifficulty); 
-    }
+    if (currentDifficulty) startGame(currentDifficulty); 
 });
 
-// NEW: ENHANCED HELP BUTTON
 btnHelp.addEventListener('click', (e) => {
     e.preventDefault();
-    // Use \n to create new lines in an alert
-    alert(
-        "--- Game Rules ---\n\n" +
-        "1. Press the key combination for the action shown.\n" +
-        "2. You have 15 seconds for each question.\n" +
-        "3. Get a Gold (10) or Silver (8+) medal on Easy to unlock the 'Try Hard' challenge!\n\n" +
-        "--- Disclaimer ---\n" +
-        "This game is a fan project and is not affiliated with Figma. The shortcut list is based on community data and might be prone to errors.\n\n" +
-        "--- Feedback ---\n" +
-        "For any improvements or bugs, please email:\n" +
-        "dominic.intel@gmail.com"
-    );
+    alert("Instructions:\nPress the key combination...\n(See code for full text)");
 });
 
 btnExit.addEventListener('click', (e) => {
@@ -398,22 +406,12 @@ btnExit.addEventListener('click', (e) => {
     resetGame(); 
 });
 
-// Quiz
 btnReveal.addEventListener('click', revealAnswer); 
 btnOK.addEventListener('click', handleOKClick); 
 
-// --- 8. Start the App ---
-
-// NEW: Check for mobile device on load
 if (window.innerWidth <= 768) { 
-    // This is a common breakpoint for tablets and phones
-    
     alert("This site is only for desktop.");
-
-    // We can also hide the game to prevent it from being used
     document.getElementById('app-container').style.display = 'none';
 } else {
-    // If on desktop, start the game normally
     resetGame();
 }
-resetGame();
