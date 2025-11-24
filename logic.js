@@ -212,14 +212,16 @@ function formatKeys(keys) {
     return keys.map(formatKey).join(' + ');
 }
 
+// UPDATED: Joins key caps with a plus sign
 function renderKeys() {
     if (bufferedInput.length === 0) {
         keyVisualizer.innerHTML = '<span class="key-placeholder">Type your answer...</span>';
         return;
     }
+    // Map each key to a div, then join them with the separator span
     keyVisualizer.innerHTML = bufferedInput.map(key => {
         return `<div class="key-cap active">${formatKey(key)}</div>`;
-    }).join('');
+    }).join('<span class="key-separator">+</span>');
 }
 
 // --- Validation Logic ---
@@ -287,7 +289,7 @@ function handleCorrectAnswer() {
 }
 
 function handleIncorrectAnswer() {
-    answerEl.textContent = 'Incorrect';
+    answerEl.textContent = 'Incorrect'; // Title Case Text
     answerEl.className = 'incorrect';
     btnReveal.classList.remove('hidden'); 
     // Note: Controls are already hidden by checkAnswer()
