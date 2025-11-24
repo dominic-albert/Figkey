@@ -15,12 +15,11 @@ const difficultyButtons = document.querySelectorAll('.difficulty-btn');
 const btnPlayAgain = document.getElementById('play-again-btn');
 const btnTryHard = document.getElementById('try-hard-btn');
 const btnRetake = document.getElementById('btn-retake');
-const btnHelp = document.getElementById('btn-help');
 const btnExit = document.getElementById('btn-exit');
 const btnReveal = document.getElementById('reveal-btn'); 
 const btnOK = document.getElementById('ok-btn'); 
 
-// NEW: Input Control Buttons
+// Input Control Buttons
 const inputControls = document.getElementById('input-controls');
 const btnClear = document.getElementById('btn-clear');
 const btnSubmit = document.getElementById('btn-submit');
@@ -50,7 +49,7 @@ let currentDifficulty = '';
 let timerInterval;
 let timeLeft = 15;
 
-// NEW: Buffer for Manual Submission
+// Buffer for Manual Submission
 let bufferedInput = []; 
 
 // --- 4. Core Game Functions ---
@@ -70,8 +69,8 @@ function startTimer() {
     timerEl.textContent = timeLeft;
     timerEl.className = ''; 
     
-    // Show input controls
-    inputControls.classList.remove('hidden');
+    // ENSURE CONTROLS ARE HIDDEN INITIALLY
+    inputControls.classList.add('hidden');
     
     timerInterval = setInterval(() => {
         timeLeft--;
@@ -136,8 +135,8 @@ function getNewQuestion() {
         btnReveal.classList.add('hidden');
         btnOK.classList.add('hidden'); 
         
-        // Show controls, reset check
-        inputControls.classList.remove('hidden');
+        // Hide controls initially
+        inputControls.classList.add('hidden');
         isChecking = false; 
         
         startTimer(); 
@@ -218,7 +217,6 @@ function renderKeys() {
         keyVisualizer.innerHTML = '<span class="key-placeholder">Type your answer...</span>';
         return;
     }
-    // Show keys in order of entry
     keyVisualizer.innerHTML = bufferedInput.map(key => {
         return `<div class="key-cap active">${formatKey(key)}</div>`;
     }).join('');
@@ -230,7 +228,7 @@ function checkAnswer() {
     if (isChecking) return;
     isChecking = true; // Lock input
     stopTimer();
-    inputControls.classList.add('hidden'); // Hide submit/clear buttons
+    inputControls.classList.add('hidden'); // HIDE CONTROLS ON SUBMIT
 
     const correctAnswer = currentQuestion[currentOS];
     let isCorrect = true;
@@ -240,11 +238,9 @@ function checkAnswer() {
         isCorrect = false;
     } else {
         // 2. Validate content
-        // Special case: "0+0" (Opacity)
         if (correctAnswer.join('') === '00') {
             if (bufferedInput.join('') !== '00') isCorrect = false;
         } else {
-            // Standard validation
             const bufferLower = bufferedInput.map(k => k.toLowerCase());
             
             // Check modifiers
@@ -256,17 +252,13 @@ function checkAnswer() {
             // Check main key
             const mainKey = correctAnswer.find(k => !['metaKey', 'ctrlKey', 'shiftKey', 'altKey'].includes(k));
             if (mainKey) {
-                // Find non-modifier keys in buffer
                 const bufferMainKeys = bufferLower.filter(k => !['control', 'shift', 'alt', 'meta'].includes(k));
-                
                 let found = false;
                 bufferMainKeys.forEach(k => {
                     if (k === mainKey.toLowerCase()) found = true;
-                    // Special mappings
                     if (mainKey === '=' && k === '+') found = true;
                     if (mainKey === 'space' && k === ' ') found = true;
                 });
-                
                 if (!found) isCorrect = false;
             }
         }
@@ -302,7 +294,7 @@ function handleTimeout() {
     answerEl.textContent = 'Time Out!';
     answerEl.className = 'timeout';
     btnReveal.classList.remove('hidden');
-    inputControls.classList.add('hidden');
+    inputControls.classList.add('hidden'); // HIDE CONTROLS ON TIMEOUT
     isChecking = true;
 }
 
@@ -318,24 +310,27 @@ function revealAnswer() {
 
 // --- 5. Event Listeners ---
 
-// Input Button Listeners
 btnSubmit.addEventListener('click', checkAnswer);
 btnClear.addEventListener('click', () => {
     bufferedInput = [];
     renderKeys();
+    // Optional: Hide controls if cleared? 
+    // inputControls.classList.add('hidden');
 });
 
-// Keyboard Listener (Accumulate Keys)
+// Keyboard Listener
 document.addEventListener('keydown', function(e) {
     if (quizContainer.classList.contains('hidden') || isChecking) return;
 
-    // Prevent default browser actions for common shortcuts
+    // SHOW CONTROLS ON KEYPRESS
+    if (inputControls.classList.contains('hidden')) {
+        inputControls.classList.remove('hidden');
+    }
+
     if(['Tab', 'Alt', ' '].includes(e.key) || (e.ctrlKey && e.key === 's')) {
         e.preventDefault();
     }
 
-    // Ignore if key is already pressed (prevent repeated events on hold)
-    // Note: for "00", we need to allow duplicates if the key is '0'
     const isModifier = ["Control", "Shift", "Alt", "Meta"].includes(e.key);
     if (!isModifier && bufferedInput.includes(e.key) && e.key !== '0') {
        return; 
@@ -344,12 +339,10 @@ document.addEventListener('keydown', function(e) {
         return;
     }
 
-    // Add key to buffer
     bufferedInput.push(e.key);
     renderKeys();
 });
 
-// Other UI Listeners
 difficultyButtons.forEach(button => {
     button.addEventListener('click', (e) => {
         startGame(e.target.dataset.difficulty);
@@ -362,11 +355,6 @@ btnTryHard.addEventListener('click', () => startGame('hard'));
 btnRetake.addEventListener('click', (e) => {
     e.preventDefault(); 
     if (currentDifficulty) startGame(currentDifficulty); 
-});
-
-btnHelp.addEventListener('click', (e) => {
-    e.preventDefault();
-    alert("Instructions:\n1. Type the shortcut keys.\n2. Click 'Submit Answer' to check.\n3. Use 'Clear' to fix mistakes.");
 });
 
 btnExit.addEventListener('click', (e) => {
