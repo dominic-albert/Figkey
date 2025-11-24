@@ -20,6 +20,11 @@ const btnExit = document.getElementById('btn-exit');
 const btnReveal = document.getElementById('reveal-btn'); 
 const btnOK = document.getElementById('ok-btn'); 
 
+// NEW: Input Control Buttons
+const inputControls = document.getElementById('input-controls');
+const btnClear = document.getElementById('btn-clear');
+const btnSubmit = document.getElementById('btn-submit');
+
 // Display elements
 const scoreDisplay = document.getElementById('score-display');
 const questionCounter = document.getElementById('question-counter');
@@ -29,7 +34,7 @@ const finalScoreEl = document.getElementById('final-score');
 const progressBar = document.getElementById('progress-bar');
 const badgeDisplay = document.getElementById('badge-display');
 const timerEl = document.getElementById('timer'); 
-const keyVisualizer = document.getElementById('key-visualizer'); // NEW
+const keyVisualizer = document.getElementById('key-visualizer');
 
 // --- 3. State Variables ---
 let currentQuestion = {};
@@ -44,10 +49,9 @@ let currentDifficulty = '';
 // Timer variables
 let timerInterval;
 let timeLeft = 15;
-let keyPressHistory = []; 
 
-// NEW: Active Keys State for Visualizer
-let activeKeys = new Set(); 
+// NEW: Buffer for Manual Submission
+let bufferedInput = []; 
 
 // --- 4. Core Game Functions ---
 
@@ -58,12 +62,16 @@ function stopTimer() {
 function startTimer() {
     stopTimer(); 
     timeLeft = 15;
-    keyPressHistory = []; 
-    activeKeys.clear(); // Clear visualizer
-    renderKeys();      // Update UI
+    
+    // Reset inputs
+    bufferedInput = [];
+    renderKeys();
     
     timerEl.textContent = timeLeft;
     timerEl.className = ''; 
+    
+    // Show input controls
+    inputControls.classList.remove('hidden');
     
     timerInterval = setInterval(() => {
         timeLeft--;
@@ -78,7 +86,7 @@ function startTimer() {
         
         if (timeLeft === 0) {
             stopTimer();
-            handleTimeout(); // CHANGED: Calls specific timeout function
+            handleTimeout(); 
         }
     }, 1000);
 }
@@ -88,9 +96,7 @@ function startGame(difficulty) {
     questionCount = 0;
     currentDifficulty = difficulty; 
 
-    // Filter shortcuts
     let filtered = shortcuts.filter(s => s.difficulty.toLowerCase() === difficulty);
-    
     if (filtered.length < totalQuestions) {
          if(filtered.length === 0) {
             filtered = shortcuts.filter(s => s.difficulty.toLowerCase() === 'easy');
@@ -127,13 +133,13 @@ function getNewQuestion() {
         answerEl.textContent = '';
         answerEl.className = '';
         
-        // Reset Visualizer
-        activeKeys.clear();
-        renderKeys();
-
         btnReveal.classList.add('hidden');
         btnOK.classList.add('hidden'); 
+        
+        // Show controls, reset check
+        inputControls.classList.remove('hidden');
         isChecking = false; 
+        
         startTimer(); 
     } else {
         showResults();
@@ -155,7 +161,6 @@ function showResults() {
     body.classList.remove('diagonal-bg'); 
 
     finalScoreEl.textContent = `You got ${score} out of ${totalQuestions} correct.`;
-    
     btnTryHard.classList.add('hidden');
     
     let badgeHTML = '';
@@ -177,7 +182,7 @@ function showResults() {
 
 function resetGame() {
     stopTimer();
-    activeKeys.clear(); 
+    bufferedInput = [];
     resultsContainer.classList.add('hidden');
     quizContainer.classList.add('hidden');
     quizHeader.classList.add('hidden');
@@ -208,29 +213,98 @@ function formatKeys(keys) {
     return keys.map(formatKey).join(' + ');
 }
 
-// --- NEW: Visualizer Renderer ---
 function renderKeys() {
-    if (activeKeys.size === 0) {
-        keyVisualizer.innerHTML = '<span class="key-placeholder">Start typing...</span>';
+    if (bufferedInput.length === 0) {
+        keyVisualizer.innerHTML = '<span class="key-placeholder">Type your answer...</span>';
         return;
     }
-    
-    // Sort keys to put modifiers first
-    const modifiers = ['Control', 'Meta', 'Alt', 'Shift'];
-    const sortedKeys = Array.from(activeKeys).sort((a, b) => {
-        const aIsMod = modifiers.includes(a);
-        const bIsMod = modifiers.includes(b);
-        if (aIsMod && !bIsMod) return -1;
-        if (!aIsMod && bIsMod) return 1;
-        return 0;
-    });
-
-    keyVisualizer.innerHTML = sortedKeys.map(key => {
+    // Show keys in order of entry
+    keyVisualizer.innerHTML = bufferedInput.map(key => {
         return `<div class="key-cap active">${formatKey(key)}</div>`;
     }).join('');
 }
 
-// --- Answer Handling ---
+// --- Validation Logic ---
+
+function checkAnswer() {
+    if (isChecking) return;
+    isChecking = true; // Lock input
+    stopTimer();
+    inputControls.classList.add('hidden'); // Hide submit/clear buttons
+
+    const correctAnswer = currentQuestion[currentOS];
+    let isCorrect = true;
+
+    // 1. Check length
+    if (bufferedInput.length !== correctAnswer.length) {
+        isCorrect = false;
+    } else {
+        // 2. Validate content
+        // Special case: "0+0" (Opacity)
+        if (correctAnswer.join('') === '00') {
+            if (bufferedInput.join('') !== '00') isCorrect = false;
+        } else {
+            // Standard validation
+            const bufferLower = bufferedInput.map(k => k.toLowerCase());
+            
+            // Check modifiers
+            if (correctAnswer.includes('metaKey') && !bufferLower.includes('meta') && !bufferLower.includes('metakey')) isCorrect = false;
+            if (correctAnswer.includes('ctrlKey') && !bufferLower.includes('control') && !bufferLower.includes('ctrlkey')) isCorrect = false;
+            if (correctAnswer.includes('shiftKey') && !bufferLower.includes('shift') && !bufferLower.includes('shiftkey')) isCorrect = false;
+            if (correctAnswer.includes('altKey') && !bufferLower.includes('alt') && !bufferLower.includes('altkey')) isCorrect = false;
+
+            // Check main key
+            const mainKey = correctAnswer.find(k => !['metaKey', 'ctrlKey', 'shiftKey', 'altKey'].includes(k));
+            if (mainKey) {
+                // Find non-modifier keys in buffer
+                const bufferMainKeys = bufferLower.filter(k => !['control', 'shift', 'alt', 'meta'].includes(k));
+                
+                let found = false;
+                bufferMainKeys.forEach(k => {
+                    if (k === mainKey.toLowerCase()) found = true;
+                    // Special mappings
+                    if (mainKey === '=' && k === '+') found = true;
+                    if (mainKey === 'space' && k === ' ') found = true;
+                });
+                
+                if (!found) isCorrect = false;
+            }
+        }
+    }
+
+    if (isCorrect) {
+        handleCorrectAnswer();
+    } else {
+        handleIncorrectAnswer();
+    }
+}
+
+function handleCorrectAnswer() {
+    answerEl.textContent = 'Correct!';
+    answerEl.className = 'correct';
+    score++;
+    scoreDisplay.classList.add('score-update');
+    setTimeout(() => scoreDisplay.classList.remove('score-update'), 400);
+    
+    questionCount++;
+    setTimeout(() => {
+        getNewQuestion();
+    }, 1200);
+}
+
+function handleIncorrectAnswer() {
+    answerEl.textContent = 'Incorrect';
+    answerEl.className = 'incorrect';
+    btnReveal.classList.remove('hidden'); 
+}
+
+function handleTimeout() {
+    answerEl.textContent = 'Time Out!';
+    answerEl.className = 'timeout';
+    btnReveal.classList.remove('hidden');
+    inputControls.classList.add('hidden');
+    isChecking = true;
+}
 
 function revealAnswer() {
     btnReveal.classList.add('hidden');
@@ -242,140 +316,40 @@ function revealAnswer() {
     questionCount++;
 }
 
-function handleOKClick() {
-    btnOK.classList.add('hidden');
-    if (questionCount < totalQuestions) {
-        getNewQuestion();
-    } else {
-        progressBar.style.width = '100%'; 
-        showResults();
-    }
-}
+// --- 5. Event Listeners ---
 
-function handleCorrectAnswer() {
-    stopTimer();
-    score++;
-    answerEl.textContent = 'Correct!';
-    answerEl.className = 'correct';
-    scoreDisplay.classList.add('score-update');
-    setTimeout(() => scoreDisplay.classList.remove('score-update'), 400);
-    
-    // Clear visualizer shortly after correct answer
-    setTimeout(() => {
-        activeKeys.clear();
-        renderKeys();
-    }, 1000);
-
-    questionCount++;
-    setTimeout(() => {
-        getNewQuestion();
-    }, 1200);
-}
-
-function handleIncorrectAnswer() {
-    stopTimer();
-    answerEl.textContent = 'Incorrect';
-    answerEl.className = 'incorrect';
-    btnReveal.classList.remove('hidden'); 
-    isChecking = true; 
-}
-
-// NEW: Timeout specific handler
-function handleTimeout() {
-    stopTimer();
-    answerEl.textContent = 'Time Out!'; 
-    answerEl.className = 'timeout';    // Orange text with Hourglass
-    btnReveal.classList.remove('hidden');
-    isChecking = true;
-}
-
-// --- 5. Key Listeners ---
-
-// NEW: Global keyup listener to clear visualizer
-document.addEventListener('keyup', (e) => {
-    if (activeKeys.has(e.key)) {
-        activeKeys.delete(e.key);
-        renderKeys();
-    }
-    if (e.key === 'Control') activeKeys.delete('Control');
-    if (e.key === 'Shift') activeKeys.delete('Shift');
-    if (e.key === 'Alt') activeKeys.delete('Alt');
-    if (e.key === 'Meta') activeKeys.delete('Meta');
+// Input Button Listeners
+btnSubmit.addEventListener('click', checkAnswer);
+btnClear.addEventListener('click', () => {
+    bufferedInput = [];
     renderKeys();
 });
 
-// Window blur listener to clear keys if user Tabs away
-window.addEventListener('blur', () => {
-    activeKeys.clear();
-    renderKeys();
-});
-
+// Keyboard Listener (Accumulate Keys)
 document.addEventListener('keydown', function(e) {
-    const modifierKeys = ["Control", "Shift", "Alt", "Meta"];
-    
-    if (quizContainer.classList.contains('hidden') || isChecking) {
+    if (quizContainer.classList.contains('hidden') || isChecking) return;
+
+    // Prevent default browser actions for common shortcuts
+    if(['Tab', 'Alt', ' '].includes(e.key) || (e.ctrlKey && e.key === 's')) {
+        e.preventDefault();
+    }
+
+    // Ignore if key is already pressed (prevent repeated events on hold)
+    // Note: for "00", we need to allow duplicates if the key is '0'
+    const isModifier = ["Control", "Shift", "Alt", "Meta"].includes(e.key);
+    if (!isModifier && bufferedInput.includes(e.key) && e.key !== '0') {
+       return; 
+    }
+    if (isModifier && bufferedInput.includes(e.key)) {
         return;
     }
 
-    // --- VISUALIZER LOGIC (Top Priority) ---
-    if (!activeKeys.has(e.key)) {
-        activeKeys.add(e.key);
-        renderKeys();
-    }
-    
-    if (modifierKeys.includes(e.key)) {
-        return;
-    }
-    
-    if (!currentQuestion || !currentQuestion[currentOS]) return;
-
-    e.preventDefault();
-    
-    const correctAnswer = currentQuestion[currentOS];
-    let isCorrect = true;
-
-    // --- Special Case: "0+0" ---
-    if (correctAnswer.join('') === '00') {
-        if (e.key === '0' && !e.metaKey && !e.ctrlKey && !e.shiftKey && !e.altKey) {
-            keyPressHistory.push('0');
-            if (keyPressHistory.length === 2) {
-                isChecking = true;
-                handleCorrectAnswer();
-            }
-        } else {
-            isChecking = true;
-            handleIncorrectAnswer();
-        }
-        return; 
-    }
-
-    isChecking = true; 
-    const mainKey = correctAnswer.find(k => !['metaKey', 'ctrlKey', 'shiftKey', 'altKey'].includes(k));
-
-    if (mainKey && mainKey.toLowerCase() !== e.key.toLowerCase()) {
-        let keyMatch = false;
-        if (mainKey === '=' && e.key === '+') keyMatch = true;
-        else if (mainKey === 'space' && e.code === 'Space') keyMatch = true;
-        
-        if (!keyMatch) isCorrect = false;
-
-    } else if (!mainKey) {
-         isCorrect = true; 
-    }
-    
-    if (correctAnswer.includes('metaKey') !== e.metaKey) isCorrect = false;
-    if (correctAnswer.includes('ctrlKey') !== e.ctrlKey) isCorrect = false;
-    if (correctAnswer.includes('shiftKey') !== e.shiftKey) isCorrect = false;
-    if (correctAnswer.includes('altKey') !== e.altKey) isCorrect = false;
-    
-    if (isCorrect) {
-        handleCorrectAnswer();
-    } else {
-        handleIncorrectAnswer();
-    }
+    // Add key to buffer
+    bufferedInput.push(e.key);
+    renderKeys();
 });
 
-// --- 7. Button Listeners ---
+// Other UI Listeners
 difficultyButtons.forEach(button => {
     button.addEventListener('click', (e) => {
         startGame(e.target.dataset.difficulty);
@@ -392,7 +366,7 @@ btnRetake.addEventListener('click', (e) => {
 
 btnHelp.addEventListener('click', (e) => {
     e.preventDefault();
-    alert("Instructions:\nPress the key combination...\n(See code for full text)");
+    alert("Instructions:\n1. Type the shortcut keys.\n2. Click 'Submit Answer' to check.\n3. Use 'Clear' to fix mistakes.");
 });
 
 btnExit.addEventListener('click', (e) => {
@@ -402,6 +376,15 @@ btnExit.addEventListener('click', (e) => {
 
 btnReveal.addEventListener('click', revealAnswer); 
 btnOK.addEventListener('click', handleOKClick); 
+function handleOKClick() {
+    btnOK.classList.add('hidden');
+    if (questionCount < totalQuestions) {
+        getNewQuestion();
+    } else {
+        progressBar.style.width = '100%'; 
+        showResults();
+    }
+}
 
 if (window.innerWidth <= 768) { 
     alert("This site is only for desktop.");
