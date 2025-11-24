@@ -284,4 +284,102 @@ header {
     border-radius: 10px; /* Pill shape */
     color: var(--text-dark);
     font-weight: 700;
-    font-
+    font-size: 18px;
+    transition: all 0.1s ease;
+    text-transform: capitalize;
+}
+.key-cap.active {
+    transform: translateY(3px);
+    border-bottom: 1px solid #00a8ff;
+    background-color: #f0f9ff;
+    color: #00a8ff;
+    border-color: #00a8ff;
+}
+
+/* CONTROLS (Submit/Clear) */
+#input-controls {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin-bottom: 15px;
+    height: 50px;
+    flex-shrink: 0;
+}
+#input-controls.hidden { display: flex !important; visibility: hidden; }
+
+.icon-btn { 
+    background-color: var(--btn-grey); 
+    --shadow-color: var(--btn-grey-dark); 
+    width: auto; padding: 0 20px; font-size: 15px; 
+}
+.submit-btn { 
+    background-color: var(--btn-blue); 
+    --shadow-color: var(--btn-blue-dark); 
+    width: auto; padding: 0 30px; font-size: 16px;
+}
+
+/* FEEDBACK (The "Container") */
+#answer-container {
+    height: 70px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 10px;
+    flex-shrink: 0;
+}
+#answer {
+    font-size: 18px;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    padding: 12px 24px;
+    border-radius: 50px; /* Full pill */
+    transition: all 0.2s ease;
+}
+
+/* Feedback States */
+.correct { 
+    background-color: var(--bg-correct); 
+    color: var(--text-correct); 
+    border: 1px solid #a7f3d0;
+}
+.correct::before { content: '✓'; font-weight: 900; margin-right: 10px; font-size: 20px; }
+
+.incorrect { 
+    background-color: var(--bg-incorrect); 
+    color: var(--text-incorrect);
+    border: 1px solid #fecaca;
+}
+.incorrect::before { content: '⚠️'; margin-right: 10px; font-size: 20px; }
+
+.timeout { 
+    background-color: var(--bg-timeout); 
+    color: var(--text-timeout);
+    border: 1px solid #fde68a;
+}
+.timeout::before { content: '⌛'; margin-right: 10px; font-size: 20px; }
+.info { color: var(--text-muted); font-size: 16px; }
+
+/* BOTTOM CTAs */
+.cta-container {
+    margin-top: auto;
+    padding-top: 10px;
+    min-height: 60px;
+    display: flex;
+    justify-content: center;
+}
+.cta-btn { width: 200px; font-size: 16px; }
+
+#reveal-btn { background-color: var(--btn-orange); --shadow-color: var(--btn-orange-dark); }
+#ok-btn { background-color: var(--btn-blue); --shadow-color: var(--btn-blue-dark); }
+
+/* FOOTER */
+footer {
+    position: fixed;
+    bottom: 0; width: 100%; padding: 15px; text-align: center;
+    font-size: 14px; color: rgba(255,255,255,0.7);
+    z-index: 5;
+}
+footer a { color: #fff; text-decoration: none; font-weight: 600; }
+
+.hidden { display: none !important; }
