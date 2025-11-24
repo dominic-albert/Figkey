@@ -129,12 +129,20 @@ header {
     box-shadow: 0 10px 30px var(--card-shadow), inset 0 2px 3px rgba(255,255,255,0.7);
     border: 3px solid var(--card-border); 
     width: 100%;
-    min-height: 400px;
+    /* FIX: Constant Size */
+    height: 650px; 
     box-sizing: border-box;
     text-align: center;
+    /* FIX: Use Flexbox to stabilize internal layout */
+    display: flex;
+    flex-direction: column;
 }
 
-#welcome-container { padding: 50px 40px; }
+#welcome-container { 
+    /* Welcome screen can be flexible or same height */
+    justify-content: center; 
+}
+
 #welcome-logo { height: 60px; width: auto; margin-bottom: 20px; }
 #subtitle {
     font-size: 22px; 
@@ -192,6 +200,7 @@ header {
     overflow: hidden; 
     border: 2px solid rgba(0,0,0,0.1); 
     box-shadow: inset 0 2px 5px rgba(0,0,0,0.1);
+    flex-shrink: 0; /* Prevent shrinking */
 }
 #progress-bar {
     width: 0%;
@@ -222,6 +231,7 @@ header {
     font-weight: 600;
     color: var(--text-dark);
     margin-bottom: 20px;
+    flex-shrink: 0;
 }
 
 #timer {
@@ -253,17 +263,20 @@ header {
 .score-update { animation: jiggle 0.4s ease-out; color: var(--btn-green-dark); }
 
 #prompt { font-size: 20px; font-weight: 500; color: var(--text-dark); opacity: 0.8; margin-bottom: 10px; }
+
 #question {
     font-size: 40px; 
     font-weight: 800; 
     color: var(--text-dark);
     margin-bottom: 5px; 
-    min-height: 60px; 
+    /* FIX: Fixed height to prevent jumping on long/short questions */
+    height: 140px; 
     display: flex;
     align-items: center;
     justify-content: center;
     flex-direction: column; 
     line-height: 1.2;
+    flex-shrink: 0;
 }
 
 .key-container {
@@ -274,6 +287,7 @@ header {
     gap: 10px;
     margin: 10px 0 10px 0;
     flex-wrap: wrap; 
+    flex-shrink: 0;
 }
 .key-placeholder {
     color: rgba(15, 58, 84, 0.3);
@@ -313,7 +327,17 @@ header {
     justify-content: center;
     gap: 15px;
     margin-bottom: 15px;
+    /* FIX: Reserve height even when hidden */
+    height: 50px; 
+    flex-shrink: 0;
 }
+
+/* FIX: Stability logic for controls */
+#input-controls.hidden {
+    display: flex !important; /* Force layout */
+    visibility: hidden;      /* Just make invisible */
+}
+
 .icon-btn {
     background-color: var(--btn-grey); 
     --shadow-color: var(--btn-grey-dark);
@@ -335,8 +359,14 @@ header {
     line-height: 1.4;
     position: relative;
     margin-top: 10px; 
-    min-height: 45px;
+    /* FIX: Fixed Height */
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
 }
+
 .correct, .incorrect, .timeout { font-weight: 800; text-transform: uppercase; }
 .correct { color: var(--btn-green-dark); }
 .correct::before { content: '✓'; font-size: 32px; margin-right: 10px; font-weight: 800; vertical-align: middle; }
@@ -348,7 +378,14 @@ header {
 
 .info { color: var(--btn-blue-dark); } 
 
-.cta-container { text-align: center; margin-top: 20px; min-height: 75px; }
+.cta-container { 
+    text-align: center; 
+    margin-top: auto; /* FIX: Pushes buttons to the bottom */
+    margin-bottom: 10px;
+    min-height: 75px; 
+    flex-shrink: 0;
+}
+
 .cta-btn { min-width: 120px; }
 #reveal-btn { background-color: var(--btn-orange); --shadow-color: var(--btn-orange-dark); }
 #ok-btn { background-color: var(--btn-blue); --shadow-color: var(--btn-blue-dark); }
@@ -394,5 +431,5 @@ footer {
 footer a { color: #fff; text-decoration: none; font-weight: 600; transition: color 0.2s ease; }
 footer a:hover { color: #d0c8e0; }
 
-/* FIX: Added !important to ensure utility class overrides ID styles */
+/* Generic hidden class for other elements */
 .hidden { display: none !important; }
