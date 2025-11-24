@@ -24,6 +24,10 @@ const inputControls = document.getElementById('input-controls');
 const btnClear = document.getElementById('btn-clear');
 const btnSubmit = document.getElementById('btn-submit');
 
+// Groups for swapping
+const answerContainer = document.getElementById('answer-container');
+const ctaContainer = document.getElementById('cta-container');
+
 // Display
 const scoreDisplay = document.getElementById('score-display');
 const questionCounter = document.getElementById('question-counter');
@@ -63,6 +67,8 @@ function startTimer() {
     
     timerEl.textContent = timeLeft;
     timerEl.className = ''; 
+    
+    // STRICT: Hide controls at start of timer
     inputControls.classList.add('hidden');
     
     timerInterval = setInterval(() => {
@@ -116,8 +122,13 @@ function getNewQuestion() {
         answerEl.textContent = '';
         answerEl.className = ''; // Reset container style
         
+        // Hide result elements
+        answerContainer.classList.add('hidden');
+        ctaContainer.classList.add('hidden');
         btnReveal.classList.add('hidden');
         btnOK.classList.add('hidden'); 
+        
+        // Hide input controls initially
         inputControls.classList.add('hidden');
         isChecking = false; 
         
@@ -200,7 +211,11 @@ function checkAnswer() {
     if (isChecking) return;
     isChecking = true; 
     stopTimer();
+    
+    // SWAP: Hide Controls, Show Results
     inputControls.classList.add('hidden'); 
+    answerContainer.classList.remove('hidden');
+    ctaContainer.classList.remove('hidden');
 
     const correctAnswer = currentQuestion[currentOS];
     let isCorrect = true;
@@ -238,10 +253,12 @@ function checkAnswer() {
 
 function handleCorrectAnswer() {
     answerEl.textContent = 'Correct!';
-    answerEl.className = 'correct'; // Activates green container
+    answerEl.className = 'correct'; 
     score++;
     scoreDisplay.classList.add('score-update');
     setTimeout(() => scoreDisplay.classList.remove('score-update'), 400);
+    
+    btnOK.classList.remove('hidden'); // Show Next button
     
     questionCount++;
     setTimeout(() => { getNewQuestion(); }, 1200);
@@ -249,15 +266,20 @@ function handleCorrectAnswer() {
 
 function handleIncorrectAnswer() {
     answerEl.textContent = 'Incorrect'; 
-    answerEl.className = 'incorrect'; // Activates red container
-    btnReveal.classList.remove('hidden'); 
+    answerEl.className = 'incorrect'; 
+    btnReveal.classList.remove('hidden'); // Show Reveal button
 }
 
 function handleTimeout() {
     answerEl.textContent = 'Time Out!';
-    answerEl.className = 'timeout'; // Activates yellow container
+    answerEl.className = 'timeout'; 
+    
+    // SWAP: Ensure results are shown on timeout too
+    inputControls.classList.add('hidden');
+    answerContainer.classList.remove('hidden');
+    ctaContainer.classList.remove('hidden');
     btnReveal.classList.remove('hidden');
-    inputControls.classList.add('hidden'); 
+    
     isChecking = true;
 }
 
@@ -266,7 +288,7 @@ function revealAnswer() {
     const answerKeys = currentQuestion[currentOS];
     const formattedAnswer = formatKeys(answerKeys);
     answerEl.textContent = `Correct: ${formattedAnswer}`;
-    answerEl.className = 'info'; // Neutral style
+    answerEl.className = 'info'; 
     btnOK.classList.remove('hidden'); 
     questionCount++;
 }
