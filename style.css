@@ -1,4 +1,4 @@
-/* 2. THE CSS (Based on the new UI Kit) */
+/* 2. THE CSS */
 :root {
     /* Main colors */
     --card-bg: #e3f6ff;
@@ -27,7 +27,6 @@
     --progress-bar-shadow: #7a54b3;
 }
 
-/* --- Sliding Diagonals Background --- */
 @keyframes slide {
     0% { transform: translateX(-25%); }
     100% { transform: translateX(25%); }
@@ -64,7 +63,6 @@ body.diagonal-bg .bg {
 body.diagonal-bg .bg2 { animation-direction: alternate-reverse; animation-duration: 4s; }
 body.diagonal-bg .bg3 { animation-duration: 5s; }
 
-/* --- Fixed Header Ribbon --- */
 header {
     position: fixed;
     top: 0;
@@ -112,7 +110,6 @@ header {
 #btn-feedback { background-color: #FACC15; color: #854D0E; --shadow-color: #CA8A04; }
 #btn-exit { background-color: var(--btn-red); --shadow-color: var(--btn-red-dark); }
 
-/* --- Main App Container --- */
 #app-container {
     width: 100%;
     max-width: 600px; 
@@ -186,7 +183,6 @@ header {
 #btn-easy { background-color: var(--btn-green); --shadow-color: var(--btn-green-dark); }
 #btn-hard { background-color: var(--btn-purple); --shadow-color: var(--btn-purple-dark); }
 
-/* --- Progress Bar --- */
 #progress-bar-container {
     width: 100%;
     background-color: var(--progress-bar-bg);
@@ -207,7 +203,7 @@ header {
     position: relative;
     box-shadow: 0 1px 2px rgba(0,0,0,0.2) inset;
 }
-#progress-bar::after { /* Glossy shine */
+#progress-bar::after {
     content: '';
     position: absolute;
     top: 0;
@@ -218,7 +214,6 @@ header {
     border-radius: 10px 10px 0 0;
 }
 
-/* --- Quiz Screen --- */
 #quiz-stats {
     display: flex;
     justify-content: space-between;
@@ -271,7 +266,6 @@ header {
     line-height: 1.2;
 }
 
-/* --- Live Key Visualizer Styles --- */
 .key-container {
     min-height: 60px;
     display: flex;
@@ -296,7 +290,7 @@ header {
     padding: 0 15px;
     background: #f4f4f4;
     border: 2px solid #dcdcdc;
-    border-bottom-width: 5px; /* 3D effect */
+    border-bottom-width: 5px; 
     border-radius: 8px;
     color: #333;
     font-weight: 700;
@@ -306,15 +300,14 @@ header {
     text-transform: capitalize;
 }
 .key-cap.active {
-    transform: translateY(3px); /* Push down */
+    transform: translateY(3px); 
     border-bottom-width: 2px;
     background-color: #e3f6ff;
     border-color: #00a8ff;
     color: #007bbd;
-    box-shadow: 0 0 15px rgba(0, 168, 255, 0.4); /* Glow */
+    box-shadow: 0 0 15px rgba(0, 168, 255, 0.4); 
 }
 
-/* --- Input Controls (Submit/Clear) --- */
 #input-controls {
     display: flex;
     justify-content: center;
@@ -336,7 +329,6 @@ header {
     width: auto;
 }
 
-/* --- Answer Styles --- */
 #answer {
     font-size: 30px;
     font-weight: 700;
@@ -351,7 +343,6 @@ header {
 .incorrect { color: var(--btn-red-dark); }
 .incorrect::before { content: '✗'; font-size: 32px; margin-right: 10px; font-weight: 800; vertical-align: middle; }
 
-/* Timeout Style */
 .timeout { color: #f0ad4e; }
 .timeout::before { content: '⌛'; font-size: 32px; margin-right: 10px; vertical-align: middle; }
 
@@ -362,7 +353,6 @@ header {
 #reveal-btn { background-color: var(--btn-orange); --shadow-color: var(--btn-orange-dark); }
 #ok-btn { background-color: var(--btn-blue); --shadow-color: var(--btn-blue-dark); }
 
-/* --- Results Screen --- */
 #results-container h2 { font-size: 32px; font-weight: 800; margin-bottom: 10px; color: var(--text-dark); }
 #final-score { font-size: 22px; color: var(--text-dark); margin-bottom: 30px; }
 
