@@ -69,7 +69,7 @@ function startTimer() {
     timerEl.textContent = timeLeft;
     timerEl.className = ''; 
     
-    // ENSURE CONTROLS ARE HIDDEN INITIALLY
+    // STRICT: Hide controls at start of timer
     inputControls.classList.add('hidden');
     
     timerInterval = setInterval(() => {
@@ -228,7 +228,9 @@ function checkAnswer() {
     if (isChecking) return;
     isChecking = true; // Lock input
     stopTimer();
-    inputControls.classList.add('hidden'); // HIDE CONTROLS ON SUBMIT
+    
+    // STRICT: HIDE CONTROLS IMMEDIATELY ON SUBMIT
+    inputControls.classList.add('hidden'); 
 
     const correctAnswer = currentQuestion[currentOS];
     let isCorrect = true;
@@ -288,13 +290,15 @@ function handleIncorrectAnswer() {
     answerEl.textContent = 'Incorrect';
     answerEl.className = 'incorrect';
     btnReveal.classList.remove('hidden'); 
+    // Note: Controls are already hidden by checkAnswer()
 }
 
 function handleTimeout() {
     answerEl.textContent = 'Time Out!';
     answerEl.className = 'timeout';
     btnReveal.classList.remove('hidden');
-    inputControls.classList.add('hidden'); // HIDE CONTROLS ON TIMEOUT
+    // STRICT: HIDE CONTROLS ON TIMEOUT
+    inputControls.classList.add('hidden'); 
     isChecking = true;
 }
 
@@ -311,18 +315,19 @@ function revealAnswer() {
 // --- 5. Event Listeners ---
 
 btnSubmit.addEventListener('click', checkAnswer);
+
+// STRICT: Clearing also hides the buttons (returning to 'pre-keypress' state)
 btnClear.addEventListener('click', () => {
     bufferedInput = [];
     renderKeys();
-    // Optional: Hide controls if cleared? 
-    // inputControls.classList.add('hidden');
+    inputControls.classList.add('hidden'); 
 });
 
 // Keyboard Listener
 document.addEventListener('keydown', function(e) {
     if (quizContainer.classList.contains('hidden') || isChecking) return;
 
-    // SHOW CONTROLS ON KEYPRESS
+    // STRICT: ONLY SHOW CONTROLS WHEN KEY IS PRESSED
     if (inputControls.classList.contains('hidden')) {
         inputControls.classList.remove('hidden');
     }
@@ -332,6 +337,7 @@ document.addEventListener('keydown', function(e) {
     }
 
     const isModifier = ["Control", "Shift", "Alt", "Meta"].includes(e.key);
+    // Ignore repeat keydowns
     if (!isModifier && bufferedInput.includes(e.key) && e.key !== '0') {
        return; 
     }
