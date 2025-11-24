@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title> Figdash: Figma Shortcut challenger for figma designer </title>
+    <title>Figdash: Figma Shortcut challenger</title>
     
     <link rel="icon" href="favicon.png" type="image/png">
     
@@ -20,7 +20,7 @@
     <header id="quiz-header" class="hidden">
         <div class="header-content"> 
             <div id="logo-container">
-                <img src="logo.png" alt="Figkey Logo" style="height: 32px; width: auto;">
+                <img src="logo.png" alt="Figdash Logo" style="height: 32px; width: auto;">
             </div>
             <nav id="header-nav">
                 <a href="#" id="btn-retake" title="Retake Quiz">Retake</a>
@@ -33,12 +33,9 @@
     <div id="app-container">
 
         <div id="welcome-container" class="container">
-            
-            <img src="logo.png" alt="Figkey Logo" id="welcome-logo">
-            
+            <img src="logo.png" alt="Figdash Logo" id="welcome-logo">
             <h2 id="subtitle">Figma shortcut Reflex Challenge</h2>
             <p class="description">Figdash tracks your keystrokes, predicts your command, and scores your reflexes — to master Figma shortcuts fast</p>
-            
             <p class="level-select-prompt"><b>Select a level before we proceed</b></p>
 
             <div id="difficulty-buttons">
@@ -57,9 +54,16 @@
                 <span id="question-counter">Question: 1 / 10</span>
                 <div id="timer">15</div> 
             </div>
+            
             <div id="prompt">Press the figma shortcut for...</div>
             <h1 id="question">Loading...</h1>
+            
+            <div id="key-visualizer" class="key-container">
+                <span class="key-placeholder">Start typing...</span>
+            </div>
+
             <div id="answer"></div>
+            
             <div class="cta-container">
                 <button id="reveal-btn" class="cta-btn game-btn hidden">Reveal Answer</button>
                 <button id="ok-btn" class="cta-btn game-btn hidden">OK</button>
@@ -68,14 +72,15 @@
 
         <div id="results-container" class="container hidden">
             <h2>Quiz Complete!</h2>
-            <div id="badge-display">
-                </div>
+            <div id="badge-display"></div>
             
             <p id="final-score">You got 0 out of 10 correct.</p>
             
             <div id="results-buttons">
                 <button id="play-again-btn" class="game-btn">Play Again</button>
                 <button id="try-hard-btn" class="game-btn hidden">Wanna try Hard level?</button>
+                
+                <a href="https://forms.gle/5RKnZMrB6xbczBdr9" target="_blank" id="btn-feedback" class="game-btn feedback-btn">Feedback</a>
             </div>
         </div>
 
