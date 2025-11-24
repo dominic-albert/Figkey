@@ -1,12 +1,12 @@
 /* 2. THE CSS */
 :root {
     /* Main colors */
-    --card-bg: #f8fbff; /* Slightly cleaner white-blue */
+    --card-bg: #f8fbff; 
     --card-border: #1a6e9a;
     --card-shadow: rgba(15, 58, 84, 0.1);
     
     --text-dark: #0f3a54;
-    --text-muted: #5b7da1; /* New muted color */
+    --text-muted: #5b7da1;
     --text-light: #ffffff;
     
     /* Button Colors */
@@ -305,7 +305,6 @@ header {
     height: 50px;
     flex-shrink: 0;
 }
-#input-controls.hidden { display: flex !important; visibility: hidden; }
 
 .icon-btn { 
     background-color: var(--btn-grey); 
@@ -362,11 +361,13 @@ header {
 
 /* BOTTOM CTAs */
 .cta-container {
-    margin-top: auto;
-    padding-top: 10px;
+    /* REMOVED margin-top: auto to allow it to sit below feedback */
+    margin-top: 10px;
+    margin-bottom: 10px;
     min-height: 60px;
     display: flex;
     justify-content: center;
+    flex-shrink: 0;
 }
 .cta-btn { width: 200px; font-size: 16px; }
 
@@ -382,4 +383,5 @@ footer {
 }
 footer a { color: #fff; text-decoration: none; font-weight: 600; }
 
+/* Utility */
 .hidden { display: none !important; }
