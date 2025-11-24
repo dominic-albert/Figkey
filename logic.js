@@ -1,8 +1,8 @@
-/* 3. THE JAVASCRIPT (The Brains) */
+/* 3. THE JAVASCRIPT */
 
 import { shortcuts } from './shortcuts.js';
 
-// --- 2. Get Elements ---
+// Elements
 const body = document.body;
 const appContainer = document.getElementById('app-container');
 const quizHeader = document.getElementById('quiz-header');
@@ -19,12 +19,12 @@ const btnExit = document.getElementById('btn-exit');
 const btnReveal = document.getElementById('reveal-btn'); 
 const btnOK = document.getElementById('ok-btn'); 
 
-// Input Control Buttons
+// Controls
 const inputControls = document.getElementById('input-controls');
 const btnClear = document.getElementById('btn-clear');
 const btnSubmit = document.getElementById('btn-submit');
 
-// Display elements
+// Display
 const scoreDisplay = document.getElementById('score-display');
 const questionCounter = document.getElementById('question-counter');
 const questionEl = document.getElementById('question');
@@ -35,7 +35,7 @@ const badgeDisplay = document.getElementById('badge-display');
 const timerEl = document.getElementById('timer'); 
 const keyVisualizer = document.getElementById('key-visualizer');
 
-// --- 3. State Variables ---
+// State
 let currentQuestion = {};
 let currentOS = (navigator.platform.includes("Mac") ? 'mac' : 'win');
 let score = 0;
@@ -44,15 +44,11 @@ const totalQuestions = 10;
 let quizShortcuts = []; 
 let isChecking = false; 
 let currentDifficulty = ''; 
-
-// Timer variables
 let timerInterval;
 let timeLeft = 15;
-
-// Buffer for Manual Submission
 let bufferedInput = []; 
 
-// --- 4. Core Game Functions ---
+// --- Functions ---
 
 function stopTimer() {
     clearInterval(timerInterval);
@@ -62,27 +58,18 @@ function startTimer() {
     stopTimer(); 
     timeLeft = 15;
     
-    // Reset inputs
     bufferedInput = [];
     renderKeys();
     
     timerEl.textContent = timeLeft;
     timerEl.className = ''; 
-    
-    // STRICT: Hide controls at start of timer
     inputControls.classList.add('hidden');
     
     timerInterval = setInterval(() => {
         timeLeft--;
         timerEl.textContent = timeLeft;
-        
-        if (timeLeft <= 5) {
-            timerEl.classList.add('warn'); 
-        }
-        if (timeLeft <= 2) {
-            timerEl.classList.add('danger'); 
-        }
-        
+        if (timeLeft <= 5) timerEl.classList.add('warn'); 
+        if (timeLeft <= 2) timerEl.classList.add('danger'); 
         if (timeLeft === 0) {
             stopTimer();
             handleTimeout(); 
@@ -97,9 +84,7 @@ function startGame(difficulty) {
 
     let filtered = shortcuts.filter(s => s.difficulty.toLowerCase() === difficulty);
     if (filtered.length < totalQuestions) {
-         if(filtered.length === 0) {
-            filtered = shortcuts.filter(s => s.difficulty.toLowerCase() === 'easy');
-         }
+         if(filtered.length === 0) filtered = shortcuts.filter(s => s.difficulty.toLowerCase() === 'easy');
          let i = 0;
          while(filtered.length < totalQuestions && filtered.length > 0) {
             filtered.push(filtered[i % filtered.length]);
@@ -111,7 +96,6 @@ function startGame(difficulty) {
         const j = Math.floor(Math.random() * (i + 1));
         [filtered[i], filtered[j]] = [filtered[j], filtered[i]];
     }
-    
     quizShortcuts = filtered.slice(0, totalQuestions);
     
     welcomeContainer.classList.add('hidden');
@@ -130,12 +114,10 @@ function getNewQuestion() {
         questionEl.textContent = currentQuestion.name;
         
         answerEl.textContent = '';
-        answerEl.className = '';
+        answerEl.className = ''; // Reset container style
         
         btnReveal.classList.add('hidden');
         btnOK.classList.add('hidden'); 
-        
-        // Hide controls initially
         inputControls.classList.add('hidden');
         isChecking = false; 
         
@@ -163,20 +145,13 @@ function showResults() {
     btnTryHard.classList.add('hidden');
     
     let badgeHTML = '';
-    if (score === 10) {
-        badgeHTML = '<span class="badge-icon">🥇</span><div class="badge-gold">Gold Medal!</div>';
-    } else if (score >= 8) {
-        badgeHTML = '<span class="badge-icon">🥈</span><div class="badge-silver">Silver Medal!</div>';
-    } else if (score >= 5) {
-        badgeHTML = '<span class="badge-icon">🥉</span><div class="badge-bronze">Bronze Medal!</div>';
-    } else {
-        badgeHTML = 'Practice makes perfect!';
-    }
-    badgeDisplay.innerHTML = badgeHTML;
+    if (score === 10) badgeHTML = '<span class="badge-icon">🥇</span><div class="badge-gold">Gold Medal!</div>';
+    else if (score >= 8) badgeHTML = '<span class="badge-icon">🥈</span><div class="badge-silver">Silver Medal!</div>';
+    else if (score >= 5) badgeHTML = '<span class="badge-icon">🥉</span><div class="badge-bronze">Bronze Medal!</div>';
+    else badgeHTML = 'Practice makes perfect!';
     
-    if (currentDifficulty === 'easy' && score >= 8) {
-        btnTryHard.classList.remove('hidden');
-    }
+    badgeDisplay.innerHTML = badgeHTML;
+    if (currentDifficulty === 'easy' && score >= 8) btnTryHard.classList.remove('hidden');
 }
 
 function resetGame() {
@@ -189,8 +164,6 @@ function resetGame() {
     progressBar.style.width = '0%'; 
     body.classList.add('diagonal-bg'); 
 }
-
-// --- Helper Functions ---
 
 function formatKey(key) {
     if (key === 'metaKey' || key === 'Meta') return (currentOS === 'mac') ? '⌘' : 'Win';
@@ -212,48 +185,39 @@ function formatKeys(keys) {
     return keys.map(formatKey).join(' + ');
 }
 
-// UPDATED: Joins key caps with a plus sign
 function renderKeys() {
     if (bufferedInput.length === 0) {
         keyVisualizer.innerHTML = '<span class="key-placeholder">Type your answer...</span>';
         return;
     }
-    // Map each key to a div, then join them with the separator span
+    // Join keys with the visual + separator
     keyVisualizer.innerHTML = bufferedInput.map(key => {
         return `<div class="key-cap active">${formatKey(key)}</div>`;
     }).join('<span class="key-separator">+</span>');
 }
 
-// --- Validation Logic ---
-
 function checkAnswer() {
     if (isChecking) return;
-    isChecking = true; // Lock input
+    isChecking = true; 
     stopTimer();
-    
-    // STRICT: HIDE CONTROLS IMMEDIATELY ON SUBMIT
     inputControls.classList.add('hidden'); 
 
     const correctAnswer = currentQuestion[currentOS];
     let isCorrect = true;
 
-    // 1. Check length
     if (bufferedInput.length !== correctAnswer.length) {
         isCorrect = false;
     } else {
-        // 2. Validate content
         if (correctAnswer.join('') === '00') {
             if (bufferedInput.join('') !== '00') isCorrect = false;
         } else {
             const bufferLower = bufferedInput.map(k => k.toLowerCase());
             
-            // Check modifiers
             if (correctAnswer.includes('metaKey') && !bufferLower.includes('meta') && !bufferLower.includes('metakey')) isCorrect = false;
             if (correctAnswer.includes('ctrlKey') && !bufferLower.includes('control') && !bufferLower.includes('ctrlkey')) isCorrect = false;
             if (correctAnswer.includes('shiftKey') && !bufferLower.includes('shift') && !bufferLower.includes('shiftkey')) isCorrect = false;
             if (correctAnswer.includes('altKey') && !bufferLower.includes('alt') && !bufferLower.includes('altkey')) isCorrect = false;
 
-            // Check main key
             const mainKey = correctAnswer.find(k => !['metaKey', 'ctrlKey', 'shiftKey', 'altKey'].includes(k));
             if (mainKey) {
                 const bufferMainKeys = bufferLower.filter(k => !['control', 'shift', 'alt', 'meta'].includes(k));
@@ -268,38 +232,31 @@ function checkAnswer() {
         }
     }
 
-    if (isCorrect) {
-        handleCorrectAnswer();
-    } else {
-        handleIncorrectAnswer();
-    }
+    if (isCorrect) handleCorrectAnswer();
+    else handleIncorrectAnswer();
 }
 
 function handleCorrectAnswer() {
     answerEl.textContent = 'Correct!';
-    answerEl.className = 'correct';
+    answerEl.className = 'correct'; // Activates green container
     score++;
     scoreDisplay.classList.add('score-update');
     setTimeout(() => scoreDisplay.classList.remove('score-update'), 400);
     
     questionCount++;
-    setTimeout(() => {
-        getNewQuestion();
-    }, 1200);
+    setTimeout(() => { getNewQuestion(); }, 1200);
 }
 
 function handleIncorrectAnswer() {
-    answerEl.textContent = 'Incorrect'; // Title Case Text
-    answerEl.className = 'incorrect';
+    answerEl.textContent = 'Incorrect'; 
+    answerEl.className = 'incorrect'; // Activates red container
     btnReveal.classList.remove('hidden'); 
-    // Note: Controls are already hidden by checkAnswer()
 }
 
 function handleTimeout() {
     answerEl.textContent = 'Time Out!';
-    answerEl.className = 'timeout';
+    answerEl.className = 'timeout'; // Activates yellow container
     btnReveal.classList.remove('hidden');
-    // STRICT: HIDE CONTROLS ON TIMEOUT
     inputControls.classList.add('hidden'); 
     isChecking = true;
 }
@@ -309,78 +266,45 @@ function revealAnswer() {
     const answerKeys = currentQuestion[currentOS];
     const formattedAnswer = formatKeys(answerKeys);
     answerEl.textContent = `Correct: ${formattedAnswer}`;
-    answerEl.className = 'info'; 
+    answerEl.className = 'info'; // Neutral style
     btnOK.classList.remove('hidden'); 
     questionCount++;
 }
 
-// --- 5. Event Listeners ---
-
 btnSubmit.addEventListener('click', checkAnswer);
-
-// STRICT: Clearing also hides the buttons (returning to 'pre-keypress' state)
 btnClear.addEventListener('click', () => {
     bufferedInput = [];
     renderKeys();
     inputControls.classList.add('hidden'); 
 });
 
-// Keyboard Listener
 document.addEventListener('keydown', function(e) {
     if (quizContainer.classList.contains('hidden') || isChecking) return;
-
-    // STRICT: ONLY SHOW CONTROLS WHEN KEY IS PRESSED
-    if (inputControls.classList.contains('hidden')) {
-        inputControls.classList.remove('hidden');
-    }
-
-    if(['Tab', 'Alt', ' '].includes(e.key) || (e.ctrlKey && e.key === 's')) {
-        e.preventDefault();
-    }
+    if (inputControls.classList.contains('hidden')) inputControls.classList.remove('hidden');
+    if(['Tab', 'Alt', ' '].includes(e.key) || (e.ctrlKey && e.key === 's')) e.preventDefault();
 
     const isModifier = ["Control", "Shift", "Alt", "Meta"].includes(e.key);
-    // Ignore repeat keydowns
-    if (!isModifier && bufferedInput.includes(e.key) && e.key !== '0') {
-       return; 
-    }
-    if (isModifier && bufferedInput.includes(e.key)) {
-        return;
-    }
+    if (!isModifier && bufferedInput.includes(e.key) && e.key !== '0') return; 
+    if (isModifier && bufferedInput.includes(e.key)) return;
 
     bufferedInput.push(e.key);
     renderKeys();
 });
 
 difficultyButtons.forEach(button => {
-    button.addEventListener('click', (e) => {
-        startGame(e.target.dataset.difficulty);
-    });
+    button.addEventListener('click', (e) => { startGame(e.target.dataset.difficulty); });
 });
 
 btnPlayAgain.addEventListener('click', resetGame);
 btnTryHard.addEventListener('click', () => startGame('hard'));
-
-btnRetake.addEventListener('click', (e) => {
-    e.preventDefault(); 
-    if (currentDifficulty) startGame(currentDifficulty); 
-});
-
-btnExit.addEventListener('click', (e) => {
-    e.preventDefault();
-    resetGame(); 
-});
-
+btnRetake.addEventListener('click', (e) => { e.preventDefault(); if (currentDifficulty) startGame(currentDifficulty); });
+btnExit.addEventListener('click', (e) => { e.preventDefault(); resetGame(); });
 btnReveal.addEventListener('click', revealAnswer); 
-btnOK.addEventListener('click', handleOKClick); 
-function handleOKClick() {
+btnOK.addEventListener('click', () => {
     btnOK.classList.add('hidden');
-    if (questionCount < totalQuestions) {
-        getNewQuestion();
-    } else {
-        progressBar.style.width = '100%'; 
-        showResults();
-    }
-}
+    if (questionCount < totalQuestions) getNewQuestion();
+    else { progressBar.style.width = '100%'; showResults(); }
+});
 
 if (window.innerWidth <= 768) { 
     alert("This site is only for desktop.");
