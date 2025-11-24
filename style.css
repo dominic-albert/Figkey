@@ -129,20 +129,14 @@ header {
     box-shadow: 0 10px 30px var(--card-shadow), inset 0 2px 3px rgba(255,255,255,0.7);
     border: 3px solid var(--card-border); 
     width: 100%;
-    /* FIX: Constant Size */
     height: 650px; 
     box-sizing: border-box;
     text-align: center;
-    /* FIX: Use Flexbox to stabilize internal layout */
     display: flex;
     flex-direction: column;
 }
 
-#welcome-container { 
-    /* Welcome screen can be flexible or same height */
-    justify-content: center; 
-}
-
+#welcome-container { justify-content: center; }
 #welcome-logo { height: 60px; width: auto; margin-bottom: 20px; }
 #subtitle {
     font-size: 22px; 
@@ -200,7 +194,7 @@ header {
     overflow: hidden; 
     border: 2px solid rgba(0,0,0,0.1); 
     box-shadow: inset 0 2px 5px rgba(0,0,0,0.1);
-    flex-shrink: 0; /* Prevent shrinking */
+    flex-shrink: 0; 
 }
 #progress-bar {
     width: 0%;
@@ -269,7 +263,6 @@ header {
     font-weight: 800; 
     color: var(--text-dark);
     margin-bottom: 5px; 
-    /* FIX: Fixed height to prevent jumping on long/short questions */
     height: 140px; 
     display: flex;
     align-items: center;
@@ -295,6 +288,14 @@ header {
     font-size: 14px;
     font-style: italic;
 }
+/* Styles for the "Plus" sign between keys */
+.key-separator {
+    font-size: 24px;
+    font-weight: 700;
+    color: #0f3a54;
+    margin: 0 5px;
+}
+
 .key-cap {
     display: inline-flex;
     align-items: center;
@@ -327,15 +328,12 @@ header {
     justify-content: center;
     gap: 15px;
     margin-bottom: 15px;
-    /* FIX: Reserve height even when hidden */
     height: 50px; 
     flex-shrink: 0;
 }
-
-/* FIX: Stability logic for controls */
 #input-controls.hidden {
-    display: flex !important; /* Force layout */
-    visibility: hidden;      /* Just make invisible */
+    display: flex !important; 
+    visibility: hidden;      
 }
 
 .icon-btn {
@@ -359,7 +357,6 @@ header {
     line-height: 1.4;
     position: relative;
     margin-top: 10px; 
-    /* FIX: Fixed Height */
     height: 60px;
     display: flex;
     align-items: center;
@@ -367,20 +364,31 @@ header {
     flex-shrink: 0;
 }
 
-.correct, .incorrect, .timeout { font-weight: 800; text-transform: uppercase; }
-.correct { color: var(--btn-green-dark); }
-.correct::before { content: '✓'; font-size: 32px; margin-right: 10px; font-weight: 800; vertical-align: middle; }
-.incorrect { color: var(--btn-red-dark); }
-.incorrect::before { content: '✗'; font-size: 32px; margin-right: 10px; font-weight: 800; vertical-align: middle; }
+/* Updated Incorrect Style: Title Case & Red Color */
+.incorrect { 
+    font-weight: 800; 
+    text-transform: capitalize; /* Ensure Title Case */
+    color: var(--btn-red-dark); 
+}
+/* Updated Incorrect Icon: Warning Symbol */
+.incorrect::before { 
+    content: '⚠️'; 
+    font-size: 32px; 
+    margin-right: 10px; 
+    vertical-align: middle; 
+}
 
-.timeout { color: #f0ad4e; }
+.correct { font-weight: 800; text-transform: uppercase; color: var(--btn-green-dark); }
+.correct::before { content: '✓'; font-size: 32px; margin-right: 10px; font-weight: 800; vertical-align: middle; }
+
+.timeout { font-weight: 800; text-transform: uppercase; color: #f0ad4e; }
 .timeout::before { content: '⌛'; font-size: 32px; margin-right: 10px; vertical-align: middle; }
 
 .info { color: var(--btn-blue-dark); } 
 
 .cta-container { 
     text-align: center; 
-    margin-top: auto; /* FIX: Pushes buttons to the bottom */
+    margin-top: auto; 
     margin-bottom: 10px;
     min-height: 75px; 
     flex-shrink: 0;
@@ -431,5 +439,4 @@ footer {
 footer a { color: #fff; text-decoration: none; font-weight: 600; transition: color 0.2s ease; }
 footer a:hover { color: #d0c8e0; }
 
-/* Generic hidden class for other elements */
 .hidden { display: none !important; }
