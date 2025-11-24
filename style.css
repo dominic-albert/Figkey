@@ -394,4 +394,5 @@ footer {
 footer a { color: #fff; text-decoration: none; font-weight: 600; transition: color 0.2s ease; }
 footer a:hover { color: #d0c8e0; }
 
-.hidden { display: none; }
+/* FIX: Added !important to ensure utility class overrides ID styles */
+.hidden { display: none !important; }
