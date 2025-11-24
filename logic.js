@@ -177,7 +177,7 @@ function showResults() {
 
 function resetGame() {
     stopTimer();
-    activeKeys.clear(); // Clear keys on reset
+    activeKeys.clear(); 
     resultsContainer.classList.add('hidden');
     quizContainer.classList.add('hidden');
     quizHeader.classList.add('hidden');
@@ -199,7 +199,6 @@ function formatKey(key) {
     if (key === 'delete' || key === 'Delete') return 'Del';
     if (key === 'tab' || key === 'Tab') return 'Tab';
     if (key === ' ' || key === 'space' || key === 'Space') return 'Space';
-    // For single letters, capitalize them
     if (key.length === 1) return key.toUpperCase();
     return key;
 }
@@ -216,7 +215,7 @@ function renderKeys() {
         return;
     }
     
-    // Sort keys to put modifiers first (UX preference)
+    // Sort keys to put modifiers first
     const modifiers = ['Control', 'Meta', 'Alt', 'Shift'];
     const sortedKeys = Array.from(activeKeys).sort((a, b) => {
         const aIsMod = modifiers.includes(a);
@@ -261,7 +260,7 @@ function handleCorrectAnswer() {
     scoreDisplay.classList.add('score-update');
     setTimeout(() => scoreDisplay.classList.remove('score-update'), 400);
     
-    // Clear visualizer after a short delay
+    // Clear visualizer shortly after correct answer
     setTimeout(() => {
         activeKeys.clear();
         renderKeys();
@@ -284,8 +283,8 @@ function handleIncorrectAnswer() {
 // NEW: Timeout specific handler
 function handleTimeout() {
     stopTimer();
-    answerEl.textContent = 'Time Out!'; // Custom text
-    answerEl.className = 'timeout';    // Custom class (Orange)
+    answerEl.textContent = 'Time Out!'; 
+    answerEl.className = 'timeout';    // Orange text with Hourglass
     btnReveal.classList.remove('hidden');
     isChecking = true;
 }
@@ -294,12 +293,10 @@ function handleTimeout() {
 
 // NEW: Global keyup listener to clear visualizer
 document.addEventListener('keyup', (e) => {
-    // Remove the key from the set
     if (activeKeys.has(e.key)) {
         activeKeys.delete(e.key);
         renderKeys();
     }
-    // Handle standard modifier release events specially if needed
     if (e.key === 'Control') activeKeys.delete('Control');
     if (e.key === 'Shift') activeKeys.delete('Shift');
     if (e.key === 'Alt') activeKeys.delete('Alt');
@@ -321,13 +318,11 @@ document.addEventListener('keydown', function(e) {
     }
 
     // --- VISUALIZER LOGIC (Top Priority) ---
-    // Add key to set and render immediately
     if (!activeKeys.has(e.key)) {
         activeKeys.add(e.key);
         renderKeys();
     }
     
-    // Don't check answer on modifiers alone
     if (modifierKeys.includes(e.key)) {
         return;
     }
@@ -354,7 +349,6 @@ document.addEventListener('keydown', function(e) {
         return; 
     }
 
-    // Standard checking logic
     isChecking = true; 
     const mainKey = correctAnswer.find(k => !['metaKey', 'ctrlKey', 'shiftKey', 'altKey'].includes(k));
 
