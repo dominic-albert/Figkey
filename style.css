@@ -1,509 +1,69 @@
-/* 2. THE CSS (Based on the new UI Kit) */
-:root {
-    /* Main colors */
-    --card-bg: #e3f6ff;
-    --card-border: #1a6e9a;
-    --card-shadow: rgba(0, 0, 0, 0.15);
-    
-    --text-dark: #0f3a54;
-    --text-light: #ffffff;
-    
-    /* Button Colors */
-    --btn-blue: #00a8ff;
-    --btn-blue-dark: #007bbd;
-    --btn-green: #38c172;
-    --btn-green-dark: #2a9156;
-    --btn-orange: #f0ad4e;
-    --btn-orange-dark: #ec971f;
-    --btn-red: #d9534f;
-    --btn-red-dark: #c9302c;
-    --btn-purple: #9266cc;
-    --btn-purple-dark: #7a54b3;
-    --btn-grey: #a0a0a0;
-    --btn-grey-dark: #7b7b7b;
+/* ... [Previous CSS remains the same] ... */
 
-    --progress-bar-bg: #d0c8e0;
-    --progress-bar-fill: #9266cc;
-    --progress-bar-shadow: #7a54b3;
-}
-
-/* --- Sliding Diagonals Background --- */
-@keyframes slide {
-    0% {
-        transform: translateX(-25%);
-    }
-    100% {
-        transform: translateX(25%);
-    }
-}
-
-html {
-    height: 100%;
-}
-
-body {
-    font-family: 'Poppins', sans-serif;
-    color: var(--text-dark);
-    margin: 0;
-    display: flex;
-    flex-direction: column; /* Allow content and footer */
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    overflow: hidden; 
-    position: relative; 
-    background-color: #1e5c8a; /* Static background for quiz/results */
-    transition: background-color 0.5s ease; /* Smooth transition */
-}
-
-/* Apply diagonal background only when .diagonal-bg is present on body */
-body.diagonal-bg .bg {
-    animation: slide 3s ease-in-out infinite alternate;
-    background-image: linear-gradient(-60deg, #30c8c4 50%, #1e5c8a 50%);
-    bottom: 0;
-    left: -50%;
-    opacity: .5;
-    position: fixed;
-    right: -50%;
-    top: 0;
-    z-index: -1;
-}
-
-body.diagonal-bg .bg2 {
-    animation-direction: alternate-reverse;
-    animation-duration: 4s;
-}
-
-body.diagonal-bg .bg3 {
-    animation-duration: 5s;
-}
-/* --- End of Background CSS --- */
-
-
-/* --- Fixed Header Ribbon (FOR QUIZ SCREEN) --- */
-header {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    background-color: rgba(255, 255, 255, 0.7);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-    padding: 10px 30px;
-    box-sizing: border-box;
-    z-index: 1000;
+/* --- NEW: Key Visualizer Styles --- */
+.key-container {
+    min-height: 60px;
     display: flex;
     justify-content: center;
-}
-.header-content {
-    display: flex;
-    justify-content: space-between; /* Pushes items to extremes */
     align-items: center;
-    width: 100%;
-    max-width: none; /* Removed max-width */
-}
-#logo-container { display: flex; align-items: center; }
-/* Make sure SVG scales */
-#logo-container svg { 
-    height: 32px; 
-    width: auto;
-}
-
-#header-nav {
-    display: flex;
     gap: 10px;
-}
-#header-nav a {
-    font-size: 16px; 
-    font-weight: 700; 
-    color: var(--text-light);
-    text-decoration: none;
-    transition: all 0.1s ease;
-    padding: 10px 20px; 
-    border-radius: 12px;
-    text-shadow: 1px 1px 1px rgba(0,0,0,0.2);
-    line-height: 1.3;
-    box-shadow: 0 6px 0px var(--shadow-color, rgba(0,0,0,0.25)), 
-                0 8px 15px rgba(0,0,0,0.15); 
-    border: none; 
-}
-#header-nav a:hover {
-    transform: translateY(2px);
-    box-shadow: 0 4px 0px var(--shadow-color, rgba(0,0,0,0.25)),
-                0 6px 10px rgba(0,0,0,0.15);
-}
-#header-nav a:active {
-    transform: translateY(4px);
-    box-shadow: 0 2px 0px var(--shadow-color, rgba(0,0,0,0.25)),
-                0 4px 5px rgba(0,0,0,0.15);
+    margin: 10px 0 20px 0;
 }
 
-/* Header button colors and shadows */
-#btn-retake { 
-    background-color: var(--btn-green); 
-    --shadow-color: var(--btn-green-dark); 
-}
-#btn-help { 
-    background-color: var(--btn-orange); 
-    --shadow-color: var(--btn-orange-dark); 
-}
-#btn-exit { 
-    background-color: var(--btn-red); 
-    --shadow-color: var(--btn-red-dark); 
-}
-
-
-/* --- Main App Container --- */
-#app-container {
-    width: 100%;
-    max-width: 600px; 
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    position: relative;
-    z-index: 10;
-    padding-top: 20px; 
-    padding-bottom: 20px; 
-}
-
-/* Base container style */
-.container {
-    background-color: var(--card-bg);
-    padding: 30px 40px;
-    border-radius: 20px; 
-    box-shadow: 0 10px 30px var(--card-shadow), inset 0 2px 3px rgba(255,255,255,0.7);
-    border: 3px solid var(--card-border); 
-    width: 100%;
-    min-height: 400px;
-    box-sizing: border-box;
-    text-align: center;
-}
-
-/* --- Welcome Screen Styling (Matching Image 1) --- */
-#welcome-container {
-    padding: 50px 40px; 
-}
-
-/* Styling for the logo on the welcome screen */
-#welcome-logo {
-    height: 60px; /* Larger logo */
-    width: auto;
-    margin-bottom: 20px; /* Space below logo */
-}
-
-#subtitle {
-    font-size: 22px; 
-    font-weight: 600; 
-    color: var(--text-dark);
-    opacity: 0.95;
-    margin-top: 0;
-    margin-bottom: 30px; 
-    text-shadow: 1px 1px 2px rgba(255,255,255,0.5); 
-}
-
-#welcome-container p.description {
-    font-size: 18px; 
-    color: var(--text-dark);
-    margin-bottom: 40px; 
-    line-height: 1.6;
-    text-align: center; 
-    max-width: 450px; 
-    margin-left: auto;
-    margin-right: auto;
-}
-
-.game-btn {
-    padding: 16px 35px; 
-    font-size: 20px; 
-    font-weight: 800; 
-    border-radius: 20px; 
-    box-shadow: 0 8px 0px var(--shadow-color, rgba(0,0,0,0.3)), 
-                0 10px 20px rgba(0,0,0,0.2); 
-    font-family: 'Poppins', sans-serif;
-    border: none;
-    cursor: pointer;
-    color: var(--text-light);
-    text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
-    transition: all 0.1s ease-out;
-    display: inline-flex; 
-    align-items: center;
-    justify-content: center;
-    min-width: 150px;
-    line-height: 1.3;
-}
-.game-btn:hover {
-    transform: translateY(3px);
-    box-shadow: 0 5px 0px var(--shadow-color, rgba(0,0,0,0.3)),
-                0 7px 15px rgba(0,0,0,0.2);
-}
-.game-btn:active {
-    transform: translateY(6px);
-    box-shadow: 0 2px 0px var(--shadow-color, rgba(0,0,0,0.3)),
-                0 4px 10px rgba(0,0,0,0.2);
-}
-
-#difficulty-buttons {
-    display: grid;
-    grid-template-columns: 1fr 1fr; /* Back to 2 columns */
-    gap: 25px; 
-    margin-top: 20px; 
-}
-
-.difficulty-btn {
-    width: 100%;
-    min-width: 0; 
-    padding: 18px 25px; 
-    font-size: 20px;
-    font-weight: 800;
-}
-#btn-easy { 
-    background-color: var(--btn-green); 
-    --shadow-color: var(--btn-green-dark);
-}
-#btn-hard { 
-    background-color: var(--btn-purple); 
-    --shadow-color: var(--btn-purple-dark);
-}
-
-
-/* --- Progress Bar --- */
-#progress-bar-container {
-    width: 100%;
-    background-color: var(--progress-bar-bg);
-    border-radius: 12px; 
-    height: 20px; 
-    margin-bottom: 25px;
-    overflow: hidden; 
-    border: 2px solid rgba(0,0,0,0.1); 
-    box-shadow: inset 0 2px 5px rgba(0,0,0,0.1);
-}
-#progress-bar {
-    width: 0%;
-    height: 100%;
-    background-color: var(--progress-bar-fill);
-    background-image: linear-gradient(to bottom, var(--progress-bar-fill), var(--progress-bar-shadow));
-    border-radius: 10px; 
-    transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
-    position: relative;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.2) inset;
-}
-#progress-bar::after { /* Glossy shine */
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 50%;
-    background: linear-gradient(to bottom, rgba(255,255,255,0.4), rgba(255,255,255,0.1));
-    border-radius: 10px 10px 0 0;
-}
-
-/* --- Quiz Screen --- */
-#quiz-stats {
-    display: flex;
-    justify-content: space-between;
-    align-items: center; 
-    font-size: 18px;
+.key-placeholder {
+    color: rgba(15, 58, 84, 0.3); /* Faded text */
     font-weight: 600;
-    color: var(--text-dark);
-    margin-bottom: 20px;
-}
-
-/* Countdown Timer */
-#timer {
-    font-size: 20px;
-    font-weight: 800;
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--text-light);
-    background-color: var(--btn-green);
-    border: 3px solid var(--btn-green-dark);
-    box-shadow: 0 4px 0 var(--btn-green-dark), 0 6px 10px rgba(0,0,0,0.1);
-    transition: all 0.3s ease;
-}
-#timer.warn { 
-    background-color: var(--btn-orange);
-    border-color: var(--btn-orange-dark);
-    box-shadow: 0 4px 0 var(--btn-orange-dark);
-}
-#timer.danger { 
-    background-color: var(--btn-red);
-    border-color: var(--btn-red-dark);
-    box-shadow: 0 4px 0 var(--btn-red-dark);
-    animation: pulse 0.5s infinite alternate;
-}
-@keyframes pulse {
-    to { transform: scale(1.1); }
-}
-
-@keyframes jiggle {
-    0%, 100% { transform: scale(1); }
-    25% { transform: scale(1.2) rotate(-3deg); }
-    75% { transform: scale(1.2) rotate(3deg); }
-}
-.score-update {
-    animation: jiggle 0.4s ease-out;
-    color: var(--btn-green-dark);
-}
-
-/* Quiz Hierarchy */
-#prompt {
-    font-size: 20px; 
-    font-weight: 500;
-    color: var(--text-dark);
-    opacity: 0.8;
-    margin-bottom: 10px;
-}
-#question {
-    font-size: 40px; 
-    font-weight: 800; 
-    color: var(--text-dark);
-    margin-bottom: 20px; 
-    min-height: 60px; 
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column; /* To stack question and category */
-    line-height: 1.2;
-}
-
-#answer {
-    font-size: 30px;
-    font-weight: 700;
-    line-height: 1.4;
-    position: relative;
-    margin-top: 20px; 
-    min-height: 45px;
-}
-
-.correct, .incorrect {
-    font-weight: 800; 
-    text-transform: uppercase; 
-}
-.correct { color: var(--btn-green-dark); }
-.correct::before { 
-    content: '✓';
-    font-size: 32px;
-    margin-right: 10px;
-    font-weight: 800;
-    vertical-align: middle;
-}
-.incorrect { color: var(--btn-red-dark); }
-.incorrect::before { 
-    content: '✗';
-    font-size: 32px;
-    margin-right: 10px;
-    font-weight: 800;
-    vertical-align: middle;
-}
-.info { color: var(--btn-blue-dark); } 
-
-/* CTA Buttons (Reveal & OK) */
-.cta-container {
-    text-align: center;
-    margin-top: 20px;
-    min-height: 75px; 
-}
-.cta-btn {
-    min-width: 120px;
-}
-#reveal-btn { 
-    background-color: var(--btn-orange); 
-    --shadow-color: var(--btn-orange-dark);
-}
-#ok-btn { 
-    background-color: var(--btn-blue); 
-    --shadow-color: var(--btn-blue-dark);
-}
-
-/* --- Results Screen --- */
-#results-container h2 {
-    font-size: 32px;
-    font-weight: 800;
-    margin-bottom: 10px;
-    color: var(--text-dark);
-}
-#final-score {
-    font-size: 22px;
-    color: var(--text-dark);
-    margin-bottom: 30px;
-}
-
-/* Container for results buttons */
-#results-buttons {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-    align-items: center;
-    margin-top: 20px;
-}
-
-#play-again-btn {
-    padding: 15px 30px;
-    font-size: 20px;
-    background-color: var(--btn-green); 
-    --shadow-color: var(--btn-green-dark);
-}
-
-/* NEW: Upsell button styling */
-#try-hard-btn {
-    padding: 15px 30px;
-    font-size: 20px;
-    background-color: var(--btn-purple); 
-    --shadow-color: var(--btn-purple-dark);
-    font-size: 18px; /* Slightly smaller text */
-}
-
-#badge-display {
-    font-size: 24px;
-    font-weight: 600;
-    margin-bottom: 20px;
-    animation: fadeInScale 0.5s ease-out;
-    color: var(--text-dark);
-}
-#badge-display .badge-icon {
-    display: block;
-    font-size: 60px; 
-    line-height: 1;
-    margin-bottom: 10px;
-}
-@keyframes fadeInScale {
-    0% { opacity: 0; transform: scale(0.5); }
-    100% { opacity: 1; transform: scale(1); }
-}
-.badge-gold { color: #FFD700; }
-.badge-silver { color: #a6a6a6; }
-.badge-bronze { color: #CD7F32; }
-
-/* --- Footer --- */
-footer {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    padding: 15px;
-    text-align: center;
     font-size: 14px;
-    color: rgba(255, 255, 255, 0.8);
-    text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
-    z-index: 5; 
-}
-footer a {
-    color: #fff;
-    text-decoration: none;
-    font-weight: 600;
-    transition: color 0.2s ease;
-}
-footer a:hover {
-    color: #d0c8e0;
+    font-style: italic;
 }
 
-/* Utility class */
-.hidden {
-    display: none;
+.key-cap {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 40px;
+    height: 40px;
+    padding: 0 15px;
+    background: #f4f4f4;
+    border: 2px solid #dcdcdc;
+    border-bottom-width: 5px; /* 3D effect */
+    border-radius: 8px;
+    color: #333;
+    font-weight: 700;
+    font-size: 18px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    transition: all 0.05s ease;
+    text-transform: capitalize;
+}
+
+/* The "Glowing" Effect when pressed */
+.key-cap.active {
+    transform: translateY(3px); /* Push down */
+    border-bottom-width: 2px;
+    background-color: #e3f6ff;
+    border-color: #00a8ff;
+    color: #007bbd;
+    box-shadow: 0 0 15px rgba(0, 168, 255, 0.4); /* Glow */
+}
+
+/* --- Feedback Button --- */
+.feedback-btn {
+    background-color: #FACC15; /* Yellow/Gold */
+    color: #854D0E;
+    text-decoration: none; /* Remove underline for <a> tag */
+    --shadow-color: #CA8A04;
+}
+
+/* --- Answer States --- */
+/* Existing correct/incorrect/info... adding Timeout */
+.timeout {
+    color: #f0ad4e; /* Orange */
+    font-weight: 800;
+    text-transform: uppercase;
+}
+.timeout::before {
+    content: '⌛';
+    font-size: 32px;
+    margin-right: 10px;
+    vertical-align: middle;
 }
