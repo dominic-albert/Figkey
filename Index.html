@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title> Figdash: Figma Shortcut challenger </title>
+    <title>Figdash: Figma Shortcut challenger</title>
     
     <link rel="icon" href="favicon.png" type="image/png">
     
@@ -13,7 +13,8 @@
     
     <link rel="stylesheet" href="style.css">
 </head>
-<body class="diagonal-bg"> <div class="bg"></div>
+<body class="diagonal-bg"> 
+    <div class="bg"></div>
     <div class="bg bg2"></div>
     <div class="bg bg3"></div>
 
@@ -49,8 +50,11 @@
             </div>
             
             <div id="quiz-stats">
-                <span id="score-display">Score: 0</span>
-                <span id="question-counter">Question: 1 / 10</span>
+                <div class="stats-left">
+                    <span id="score-display">Score: 0</span>
+                    <span class="divider">|</span>
+                    <span id="question-counter">Question: 1 / 10</span>
+                </div>
                 <div id="timer">15</div> 
             </div>
             
@@ -63,14 +67,16 @@
 
             <div id="input-controls" class="hidden">
                 <button id="btn-clear" class="game-btn icon-btn" title="Clear Input">Clear ⌫</button>
-                <button id="btn-submit" class="game-btn submit-btn">Submit Answer</button>
+                <button id="btn-submit" class="game-btn submit-btn">Submit</button>
             </div>
 
-            <div id="answer"></div>
+            <div id="answer-container">
+                <div id="answer"></div>
+            </div>
             
             <div class="cta-container">
                 <button id="reveal-btn" class="cta-btn game-btn hidden">Reveal Answer</button>
-                <button id="ok-btn" class="cta-btn game-btn hidden">OK</button>
+                <button id="ok-btn" class="cta-btn game-btn hidden">Next Question ➔</button>
             </div>
         </div>
 
