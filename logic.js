@@ -1,8 +1,9 @@
-/* 3. THE JAVASCRIPT */
+/* 3. THE JAVASCRIPT (The Brains) */
 
+// --- 1. Import the shortcuts list from its own file ---
 import { shortcuts } from './shortcuts.js';
 
-// Elements
+// --- 2. Get Elements ---
 const body = document.body;
 const appContainer = document.getElementById('app-container');
 const quizHeader = document.getElementById('quiz-header');
@@ -10,25 +11,23 @@ const welcomeContainer = document.getElementById('welcome-container');
 const quizContainer = document.getElementById('quiz-container');
 const resultsContainer = document.getElementById('results-container');
 
-// Buttons
+// Difficulty buttons
 const difficultyButtons = document.querySelectorAll('.difficulty-btn');
+
+// Results buttons
 const btnPlayAgain = document.getElementById('play-again-btn');
-const btnTryHard = document.getElementById('try-hard-btn');
+const btnTryHard = document.getElementById('try-hard-btn'); // Upsell button
+
+// Header nav buttons
 const btnRetake = document.getElementById('btn-retake');
+const btnHelp = document.getElementById('btn-help');
 const btnExit = document.getElementById('btn-exit');
+
+// Quiz buttons
 const btnReveal = document.getElementById('reveal-btn'); 
 const btnOK = document.getElementById('ok-btn'); 
 
-// Controls
-const inputControls = document.getElementById('input-controls');
-const btnClear = document.getElementById('btn-clear');
-const btnSubmit = document.getElementById('btn-submit');
-
-// Groups for swapping
-const answerContainer = document.getElementById('answer-container');
-const ctaContainer = document.getElementById('cta-container');
-
-// Display
+// Display elements
 const scoreDisplay = document.getElementById('score-display');
 const questionCounter = document.getElementById('question-counter');
 const questionEl = document.getElementById('question');
@@ -37,9 +36,8 @@ const finalScoreEl = document.getElementById('final-score');
 const progressBar = document.getElementById('progress-bar');
 const badgeDisplay = document.getElementById('badge-display');
 const timerEl = document.getElementById('timer'); 
-const keyVisualizer = document.getElementById('key-visualizer');
 
-// State
+// --- 3. State Variables ---
 let currentQuestion = {};
 let currentOS = (navigator.platform.includes("Mac") ? 'mac' : 'win');
 let score = 0;
@@ -48,37 +46,40 @@ const totalQuestions = 10;
 let quizShortcuts = []; 
 let isChecking = false; 
 let currentDifficulty = ''; 
+
+// Timer variables
 let timerInterval;
-let timeLeft = 15;
-let bufferedInput = []; 
+let timeLeft = 15; // <-- UPDATED TO 15
+let keyPressHistory = []; // For "0+0" shortcut
 
-// --- Functions ---
+// --- 4. Core Game Functions ---
 
+// Timer Functions
 function stopTimer() {
     clearInterval(timerInterval);
 }
 
 function startTimer() {
     stopTimer(); 
-    timeLeft = 15;
-    
-    bufferedInput = [];
-    renderKeys();
-    
+    timeLeft = 15; // <-- UPDATED TO 15
+    keyPressHistory = []; // Reset key history
     timerEl.textContent = timeLeft;
     timerEl.className = ''; 
-    
-    // STRICT: Hide controls at start of timer
-    inputControls.classList.add('hidden');
     
     timerInterval = setInterval(() => {
         timeLeft--;
         timerEl.textContent = timeLeft;
-        if (timeLeft <= 5) timerEl.classList.add('warn'); 
-        if (timeLeft <= 2) timerEl.classList.add('danger'); 
+        
+        if (timeLeft <= 5) {
+            timerEl.classList.add('warn'); 
+        }
+        if (timeLeft <= 2) {
+            timerEl.classList.add('danger'); 
+        }
+        
         if (timeLeft === 0) {
             stopTimer();
-            handleTimeout(); 
+            handleIncorrectAnswer(); 
         }
     }, 1000);
 }
@@ -88,9 +89,18 @@ function startGame(difficulty) {
     questionCount = 0;
     currentDifficulty = difficulty; 
 
+    // Filter shortcuts
     let filtered = shortcuts.filter(s => s.difficulty.toLowerCase() === difficulty);
+    
+    // If list is too small
     if (filtered.length < totalQuestions) {
-         if(filtered.length === 0) filtered = shortcuts.filter(s => s.difficulty.toLowerCase() === 'easy');
+         console.warn(`Warning: Not enough questions for ${difficulty}. Repeating questions.`);
+         // If no questions at all, use 'easy' as fallback
+         if(filtered.length === 0) {
+            console.error(`No questions found for ${difficulty}, defaulting to 'easy'.`);
+            filtered = shortcuts.filter(s => s.difficulty.toLowerCase() === 'easy');
+         }
+         // Fill up the list by repeating
          let i = 0;
          while(filtered.length < totalQuestions && filtered.length > 0) {
             filtered.push(filtered[i % filtered.length]);
@@ -98,12 +108,16 @@ function startGame(difficulty) {
          }
     }
     
+    // 1. Shuffle the ENTIRE filtered list first
     for (let i = filtered.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
         [filtered[i], filtered[j]] = [filtered[j], filtered[i]];
     }
+    
+    // 2. THEN, take the first 10 questions
     quizShortcuts = filtered.slice(0, totalQuestions);
     
+    // Show/Hide screens
     welcomeContainer.classList.add('hidden');
     resultsContainer.classList.add('hidden');
     quizContainer.classList.remove('hidden');
@@ -117,21 +131,15 @@ function getNewQuestion() {
     if (questionCount < totalQuestions) {
         updateStats(); 
         currentQuestion = quizShortcuts[questionCount];
+        
+        // Use the 'name' field directly, which now excludes the category
         questionEl.textContent = currentQuestion.name;
         
         answerEl.textContent = '';
-        answerEl.className = ''; // Reset container style
-        
-        // Hide result elements
-        answerContainer.classList.add('hidden');
-        ctaContainer.classList.add('hidden');
+        answerEl.className = '';
         btnReveal.classList.add('hidden');
         btnOK.classList.add('hidden'); 
-        
-        // Hide input controls initially
-        inputControls.classList.add('hidden');
         isChecking = false; 
-        
         startTimer(); 
     } else {
         showResults();
@@ -153,21 +161,30 @@ function showResults() {
     body.classList.remove('diagonal-bg'); 
 
     finalScoreEl.textContent = `You got ${score} out of ${totalQuestions} correct.`;
+    
+    // Hide upsell button by default
     btnTryHard.classList.add('hidden');
     
     let badgeHTML = '';
-    if (score === 10) badgeHTML = '<span class="badge-icon">🥇</span><div class="badge-gold">Gold Medal!</div>';
-    else if (score >= 8) badgeHTML = '<span class="badge-icon">🥈</span><div class="badge-silver">Silver Medal!</div>';
-    else if (score >= 5) badgeHTML = '<span class="badge-icon">🥉</span><div class="badge-bronze">Bronze Medal!</div>';
-    else badgeHTML = 'Practice makes perfect!';
-    
+    if (score === 10) {
+        badgeHTML = '<span class="badge-icon">🥇</span><div class="badge-gold">Gold Medal!</div>';
+    } else if (score >= 8) {
+        badgeHTML = '<span class="badge-icon">🥈</span><div class="badge-silver">Silver Medal!</div>';
+    } else if (score >= 5) {
+        badgeHTML = '<span class="badge-icon">🥉</span><div class="badge-bronze">Bronze Medal!</div>';
+    } else {
+        badgeHTML = 'Practice makes perfect!';
+    }
     badgeDisplay.innerHTML = badgeHTML;
-    if (currentDifficulty === 'easy' && score >= 8) btnTryHard.classList.remove('hidden');
+    
+    // Upsell logic
+    if (currentDifficulty === 'easy' && score >= 8) {
+        btnTryHard.classList.remove('hidden');
+    }
 }
 
 function resetGame() {
     stopTimer();
-    bufferedInput = [];
     resultsContainer.classList.add('hidden');
     quizContainer.classList.add('hidden');
     quizHeader.classList.add('hidden');
@@ -176,113 +193,33 @@ function resetGame() {
     body.classList.add('diagonal-bg'); 
 }
 
+// --- Helper function to show answer ---
 function formatKey(key) {
-    if (key === 'metaKey' || key === 'Meta') return (currentOS === 'mac') ? '⌘' : 'Win';
-    if (key === 'ctrlKey' || key === 'Control') return 'Ctrl';
-    if (key === 'shiftKey' || key === 'Shift') return '⇧';
-    if (key === 'altKey' || key === 'Alt') return (currentOS === 'mac') ? '⌥' : 'Alt';
-    if (key === 'escape' || key === 'Escape') return 'Esc';
-    if (key === 'enter' || key === 'Enter') return '↵';
-    if (key === 'backspace' || key === 'Backspace') return '⌫';
-    if (key === 'delete' || key === 'Delete') return 'Del';
-    if (key === 'tab' || key === 'Tab') return 'Tab';
-    if (key === ' ' || key === 'space' || key === 'Space') return 'Space';
-    if (key.length === 1) return key.toUpperCase();
-    return key;
+    if (key === 'metaKey') return (currentOS === 'mac') ? '⌘' : 'Ctrl';
+    if (key === 'ctrlKey') return 'Ctrl';
+    if (key === 'shiftKey') return '⇧';
+    if (key === 'altKey') return (currentOS === 'mac') ? '⌥' : 'Alt';
+    if (key === 'escape') return 'Esc';
+    if (key === 'enter') return '↩';
+    if (key === 'backspace') return (currentOS ==='mac') ? '⌫' : 'Backspace'; // Updated
+    if (key === 'delete') return 'Del'; // Updated
+    if (key === 'pageup') return 'Page Up'; // Updated
+    if (key === 'pagedown') return 'Page Down'; // Updated
+    if (key === 'home') return 'Home'; // Updated
+    if (key === 'end') return 'End'; // Updated
+    if (key === 'tab') return 'Tab';
+    if (key === 'space') return 'Space';
+    if (key === '=') return '+'; // Handle the zoom-in key
+    return key.toUpperCase();
 }
 
 function formatKeys(keys) {
+    // Special case for "0+0"
     if (keys.join('') === '00') return '0 + 0';
     return keys.map(formatKey).join(' + ');
 }
 
-function renderKeys() {
-    if (bufferedInput.length === 0) {
-        keyVisualizer.innerHTML = '<span class="key-placeholder">Type your answer...</span>';
-        return;
-    }
-    // Join keys with the visual + separator
-    keyVisualizer.innerHTML = bufferedInput.map(key => {
-        return `<div class="key-cap active">${formatKey(key)}</div>`;
-    }).join('<span class="key-separator">+</span>');
-}
-
-function checkAnswer() {
-    if (isChecking) return;
-    isChecking = true; 
-    stopTimer();
-    
-    // SWAP: Hide Controls, Show Results
-    inputControls.classList.add('hidden'); 
-    answerContainer.classList.remove('hidden');
-    ctaContainer.classList.remove('hidden');
-
-    const correctAnswer = currentQuestion[currentOS];
-    let isCorrect = true;
-
-    if (bufferedInput.length !== correctAnswer.length) {
-        isCorrect = false;
-    } else {
-        if (correctAnswer.join('') === '00') {
-            if (bufferedInput.join('') !== '00') isCorrect = false;
-        } else {
-            const bufferLower = bufferedInput.map(k => k.toLowerCase());
-            
-            if (correctAnswer.includes('metaKey') && !bufferLower.includes('meta') && !bufferLower.includes('metakey')) isCorrect = false;
-            if (correctAnswer.includes('ctrlKey') && !bufferLower.includes('control') && !bufferLower.includes('ctrlkey')) isCorrect = false;
-            if (correctAnswer.includes('shiftKey') && !bufferLower.includes('shift') && !bufferLower.includes('shiftkey')) isCorrect = false;
-            if (correctAnswer.includes('altKey') && !bufferLower.includes('alt') && !bufferLower.includes('altkey')) isCorrect = false;
-
-            const mainKey = correctAnswer.find(k => !['metaKey', 'ctrlKey', 'shiftKey', 'altKey'].includes(k));
-            if (mainKey) {
-                const bufferMainKeys = bufferLower.filter(k => !['control', 'shift', 'alt', 'meta'].includes(k));
-                let found = false;
-                bufferMainKeys.forEach(k => {
-                    if (k === mainKey.toLowerCase()) found = true;
-                    if (mainKey === '=' && k === '+') found = true;
-                    if (mainKey === 'space' && k === ' ') found = true;
-                });
-                if (!found) isCorrect = false;
-            }
-        }
-    }
-
-    if (isCorrect) handleCorrectAnswer();
-    else handleIncorrectAnswer();
-}
-
-function handleCorrectAnswer() {
-    answerEl.textContent = 'Correct!';
-    answerEl.className = 'correct'; 
-    score++;
-    scoreDisplay.classList.add('score-update');
-    setTimeout(() => scoreDisplay.classList.remove('score-update'), 400);
-    
-    btnOK.classList.remove('hidden'); // Show Next button
-    
-    questionCount++;
-    setTimeout(() => { getNewQuestion(); }, 1200);
-}
-
-function handleIncorrectAnswer() {
-    answerEl.textContent = 'Incorrect'; 
-    answerEl.className = 'incorrect'; 
-    btnReveal.classList.remove('hidden'); // Show Reveal button
-}
-
-function handleTimeout() {
-    answerEl.textContent = 'Time Out!';
-    answerEl.className = 'timeout'; 
-    
-    // SWAP: Ensure results are shown on timeout too
-    inputControls.classList.add('hidden');
-    answerContainer.classList.remove('hidden');
-    ctaContainer.classList.remove('hidden');
-    btnReveal.classList.remove('hidden');
-    
-    isChecking = true;
-}
-
+// --- Function to handle reveal logic ---
 function revealAnswer() {
     btnReveal.classList.add('hidden');
     const answerKeys = currentQuestion[currentOS];
@@ -290,47 +227,193 @@ function revealAnswer() {
     answerEl.textContent = `Correct: ${formattedAnswer}`;
     answerEl.className = 'info'; 
     btnOK.classList.remove('hidden'); 
+    
     questionCount++;
 }
 
-btnSubmit.addEventListener('click', checkAnswer);
-btnClear.addEventListener('click', () => {
-    bufferedInput = [];
-    renderKeys();
-    inputControls.classList.add('hidden'); 
-});
-
-document.addEventListener('keydown', function(e) {
-    if (quizContainer.classList.contains('hidden') || isChecking) return;
-    if (inputControls.classList.contains('hidden')) inputControls.classList.remove('hidden');
-    if(['Tab', 'Alt', ' '].includes(e.key) || (e.ctrlKey && e.key === 's')) e.preventDefault();
-
-    const isModifier = ["Control", "Shift", "Alt", "Meta"].includes(e.key);
-    if (!isModifier && bufferedInput.includes(e.key) && e.key !== '0') return; 
-    if (isModifier && bufferedInput.includes(e.key)) return;
-
-    bufferedInput.push(e.key);
-    renderKeys();
-});
-
-difficultyButtons.forEach(button => {
-    button.addEventListener('click', (e) => { startGame(e.target.dataset.difficulty); });
-});
-
-btnPlayAgain.addEventListener('click', resetGame);
-btnTryHard.addEventListener('click', () => startGame('hard'));
-btnRetake.addEventListener('click', (e) => { e.preventDefault(); if (currentDifficulty) startGame(currentDifficulty); });
-btnExit.addEventListener('click', (e) => { e.preventDefault(); resetGame(); });
-btnReveal.addEventListener('click', revealAnswer); 
-btnOK.addEventListener('click', () => {
+// --- Function to handle "OK" click ---
+function handleOKClick() {
     btnOK.classList.add('hidden');
-    if (questionCount < totalQuestions) getNewQuestion();
-    else { progressBar.style.width = '100%'; showResults(); }
+    
+    if (questionCount < totalQuestions) {
+        getNewQuestion();
+    } else {
+        progressBar.style.width = '100%'; 
+        showResults();
+    }
+}
+
+// Separate functions for correct/incorrect
+function handleCorrectAnswer() {
+    stopTimer();
+    score++;
+    answerEl.textContent = 'Correct!';
+    answerEl.className = 'correct';
+    scoreDisplay.classList.add('score-update');
+    setTimeout(() => scoreDisplay.classList.remove('score-update'), 400);
+    
+    questionCount++;
+    setTimeout(() => {
+        getNewQuestion();
+    }, 1200);
+}
+
+function handleIncorrectAnswer() {
+    stopTimer();
+    answerEl.textContent = 'Incorrect';
+    answerEl.className = 'incorrect';
+    btnReveal.classList.remove('hidden'); 
+    isChecking = true; 
+}
+
+// --- 5. The Key Listener ---
+document.addEventListener('keydown', function(e) {
+    const modifierKeys = ["Control", "Shift", "Alt", "Meta"];
+    
+    if (quizContainer.classList.contains('hidden') || isChecking) {
+        return;
+    }
+
+    // Don't prevent default for modifiers, but return
+    if (modifierKeys.includes(e.key)) {
+        return;
+    }
+    
+    // Check for empty question (edge case)
+    if (!currentQuestion || !currentQuestion[currentOS]) {
+        console.error("No current question loaded.");
+        return;
+    }
+
+    e.preventDefault();
+    
+    const correctAnswer = currentQuestion[currentOS];
+    let isCorrect = true;
+
+    // --- Special Case: "0+0" for opacity ---
+    if (correctAnswer.join('') === '00') {
+        if (e.key === '0' && !e.metaKey && !e.ctrlKey && !e.shiftKey && !e.altKey) {
+            keyPressHistory.push('0');
+            if (keyPressHistory.length === 2) {
+                isChecking = true;
+                handleCorrectAnswer();
+            }
+            // If it's just the first '0', don't do anything yet
+        } else {
+            // Wrong key pressed during "0+0"
+            isChecking = true;
+            handleIncorrectAnswer();
+        }
+        return; // Exit listener
+    }
+    // --- End Special Case ---
+
+    // If not special case, lock checking immediately
+    isChecking = true; 
+    
+    // Get the main (non-modifier) key from the answer
+    const mainKey = correctAnswer.find(k => !['metaKey', 'ctrlKey', 'shiftKey', 'altKey'].includes(k));
+
+    // Check main key
+    if (mainKey && mainKey.toLowerCase() !== e.key.toLowerCase()) {
+        let keyMatch = false;
+         
+        // Special check for '+' key which is '='
+        if (mainKey === '=' && e.key === '+') {
+            keyMatch = true;
+        }
+        // Special check for 'Space'
+        else if (mainKey === 'space' && e.code === 'Space') {
+            keyMatch = true;
+        }
+        
+        if (!keyMatch) {
+            isCorrect = false;
+        }
+
+    } else if (!mainKey) {
+         // Handle shortcuts that are ONLY modifiers (e.g., "Alt")
+         isCorrect = true; // Assume true, modifiers check will finalize
+    }
+    
+    // Check modifier keys
+    if (correctAnswer.includes('metaKey') !== e.metaKey) isCorrect = false;
+    if (correctAnswer.includes('ctrlKey') !== e.ctrlKey) isCorrect = false;
+    if (correctAnswer.includes('shiftKey') !== e.shiftKey) isCorrect = false;
+    if (correctAnswer.includes('altKey') !== e.altKey) isCorrect = false;
+    
+    // --- 6. Show Feedback ---
+    if (isCorrect) {
+        handleCorrectAnswer();
+    } else {
+        handleIncorrectAnswer();
+    }
 });
 
+// --- 7. Button Event Listeners ---
+
+// Difficulty Buttons
+difficultyButtons.forEach(button => {
+    button.addEventListener('click', (e) => {
+        const difficulty = e.target.dataset.difficulty;
+        startGame(difficulty);
+    });
+});
+
+// Results
+btnPlayAgain.addEventListener('click', resetGame);
+
+// Upsell button listener
+btnTryHard.addEventListener('click', () => {
+    startGame('hard');
+});
+
+// Header Nav
+btnRetake.addEventListener('click', (e) => {
+    e.preventDefault(); 
+    if (currentDifficulty) { // Only retake if a difficulty was chosen
+        startGame(currentDifficulty); 
+    }
+});
+
+// NEW: ENHANCED HELP BUTTON
+btnHelp.addEventListener('click', (e) => {
+    e.preventDefault();
+    // Use \n to create new lines in an alert
+    alert(
+        "--- Game Rules ---\n\n" +
+        "1. Press the key combination for the action shown.\n" +
+        "2. You have 15 seconds for each question.\n" +
+        "3. Get a Gold (10) or Silver (8+) medal on Easy to unlock the 'Try Hard' challenge!\n\n" +
+        "--- Disclaimer ---\n" +
+        "This game is a fan project and is not affiliated with Figma. The shortcut list is based on community data and might be prone to errors.\n\n" +
+        "--- Feedback ---\n" +
+        "For any improvements or bugs, please email:\n" +
+        "dominic.intel@gmail.com"
+    );
+});
+
+btnExit.addEventListener('click', (e) => {
+    e.preventDefault();
+    resetGame(); 
+});
+
+// Quiz
+btnReveal.addEventListener('click', revealAnswer); 
+btnOK.addEventListener('click', handleOKClick); 
+
+// --- 8. Start the App ---
+
+// NEW: Check for mobile device on load
 if (window.innerWidth <= 768) { 
+    // This is a common breakpoint for tablets and phones
+    
     alert("This site is only for desktop.");
+
+    // We can also hide the game to prevent it from being used
     document.getElementById('app-container').style.display = 'none';
 } else {
+    // If on desktop, start the game normally
     resetGame();
 }
+resetGame();
