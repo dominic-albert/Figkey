@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Figdash: Figma Shortcut challenger</title>
+    <title> Figdash: Figma Shortcut challenger for figma designer </title>
     
     <link rel="icon" href="favicon.png" type="image/png">
     
@@ -13,19 +13,18 @@
     
     <link rel="stylesheet" href="style.css">
 </head>
-<body class="diagonal-bg"> 
-    <div class="bg"></div>
+<body class="diagonal-bg"> <div class="bg"></div>
     <div class="bg bg2"></div>
     <div class="bg bg3"></div>
 
     <header id="quiz-header" class="hidden">
         <div class="header-content"> 
             <div id="logo-container">
-                <img src="logo.png" alt="Figdash Logo" style="height: 32px; width: auto;">
+                <img src="logo.png" alt="Figkey Logo" style="height: 32px; width: auto;">
             </div>
             <nav id="header-nav">
                 <a href="#" id="btn-retake" title="Retake Quiz">Retake</a>
-                <a href="https://forms.gle/5RKnZMrB6xbczBdr9" target="_blank" id="btn-feedback" title="Give Feedback">Feedback</a>
+                <a href="#" id="btn-help" title="Help">Help</a>
                 <a href="#" id="btn-exit" title="Exit to Home">Exit</a>
             </nav>
         </div>
@@ -34,10 +33,14 @@
     <div id="app-container">
 
         <div id="welcome-container" class="container">
-            <img src="logo.png" alt="Figdash Logo" id="welcome-logo">
+            
+            <img src="logo.png" alt="Figkey Logo" id="welcome-logo">
+            
             <h2 id="subtitle">Figma shortcut Reflex Challenge</h2>
             <p class="description">Figdash tracks your keystrokes, predicts your command, and scores your reflexes — to master Figma shortcuts fast</p>
+            
             <p class="level-select-prompt"><b>Select a level before we proceed</b></p>
+
             <div id="difficulty-buttons">
                 <button id="btn-easy" class="difficulty-btn game-btn" data-difficulty="easy">Easy</button>
                 <button id="btn-hard" class="difficulty-btn game-btn" data-difficulty="hard">Hard</button>
@@ -50,39 +53,23 @@
             </div>
             
             <div id="quiz-stats">
-                <div class="stats-left">
-                    <span id="score-display">Score: 0</span>
-                    <span class="divider">|</span>
-                    <span id="question-counter">Question: 1 / 10</span>
-                </div>
+                <span id="score-display">Score: 0</span>
+                <span id="question-counter">Question: 1 / 10</span>
                 <div id="timer">15</div> 
             </div>
-            
             <div id="prompt">Press the figma shortcut for...</div>
             <h1 id="question">Loading...</h1>
-            
-            <div id="key-visualizer" class="key-container">
-                <span class="key-placeholder">Type your answer...</span>
-            </div>
-
-            <div id="input-controls" class="hidden">
-                <button id="btn-clear" class="game-btn icon-btn" title="Clear Input">Clear ⌫</button>
-                <button id="btn-submit" class="game-btn submit-btn">Submit</button>
-            </div>
-
-            <div id="answer-container" class="hidden">
-                <div id="answer"></div>
-            </div>
-            
-            <div id="cta-container" class="cta-container hidden">
+            <div id="answer"></div>
+            <div class="cta-container">
                 <button id="reveal-btn" class="cta-btn game-btn hidden">Reveal Answer</button>
-                <button id="ok-btn" class="cta-btn game-btn hidden">Next Question ➔</button>
+                <button id="ok-btn" class="cta-btn game-btn hidden">OK</button>
             </div>
         </div>
 
         <div id="results-container" class="container hidden">
             <h2>Quiz Complete!</h2>
-            <div id="badge-display"></div>
+            <div id="badge-display">
+                </div>
             
             <p id="final-score">You got 0 out of 10 correct.</p>
             
