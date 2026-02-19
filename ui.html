@@ -1,0 +1,2068 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f3f2ef;
+      min-height: 100vh;
+    }
+
+    /* ═══════════════ LOGIN SCREEN ═══════════════ */
+    .login-view {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .login-hero {
+      background: linear-gradient(135deg, #0A66C2 0%, #004182 100%);
+      padding: 40px 24px 32px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .login-hero::before {
+      content: '';
+      position: absolute;
+      top: -30px;
+      right: -30px;
+      width: 120px;
+      height: 120px;
+      background: rgba(255,255,255,0.06);
+      border-radius: 50%;
+    }
+
+    .login-hero::after {
+      content: '';
+      position: absolute;
+      bottom: -20px;
+      left: -20px;
+      width: 80px;
+      height: 80px;
+      background: rgba(255,255,255,0.04);
+      border-radius: 50%;
+    }
+
+    .login-logo {
+      width: 56px;
+      height: 56px;
+      background: rgba(255,255,255,0.15);
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 16px;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+
+    .login-logo svg {
+      width: 28px;
+      height: 28px;
+      fill: none;
+      stroke: white;
+      stroke-width: 1.8;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .login-hero h1 {
+      font-size: 18px;
+      font-weight: 700;
+      color: white;
+      margin-bottom: 4px;
+      letter-spacing: -0.3px;
+    }
+
+    .login-hero p {
+      font-size: 12px;
+      color: rgba(255,255,255,0.75);
+      font-weight: 400;
+    }
+
+    .login-body {
+      flex: 1;
+      background: #f3f2ef;
+      padding: 24px 20px;
+    }
+
+    .login-card {
+      background: white;
+      border-radius: 10px;
+      padding: 24px 20px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.08), 0 0 0 1px rgba(0,0,0,0.04);
+    }
+
+    .login-card h2 {
+      font-size: 14px;
+      font-weight: 600;
+      color: #1a1a1a;
+      margin-bottom: 4px;
+    }
+
+    .login-card .login-desc {
+      font-size: 12px;
+      color: #666;
+      margin-bottom: 16px;
+    }
+
+    .login-card .form-group {
+      margin-bottom: 14px;
+    }
+
+    .login-card label {
+      display: block;
+      font-size: 11px;
+      font-weight: 600;
+      color: #555;
+      margin-bottom: 5px;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+
+    .login-card input[type="email"] {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1.5px solid #d0d0d0;
+      border-radius: 8px;
+      font-size: 13px;
+      font-family: inherit;
+      background: #fafafa;
+      transition: all 0.2s;
+    }
+
+    .login-card input[type="email"]:focus {
+      outline: none;
+      border-color: #0A66C2;
+      box-shadow: 0 0 0 3px rgba(10,102,194,0.12);
+      background: white;
+    }
+
+    .login-card input[type="email"]::placeholder {
+      color: #aaa;
+    }
+
+    .login-footer {
+      text-align: center;
+      padding: 12px 20px 20px;
+    }
+
+    .login-footer p {
+      font-size: 10px;
+      color: #999;
+      line-height: 1.4;
+    }
+
+    /* ═══════════════ BUTTONS ═══════════════ */
+    .btn {
+      padding: 8px 16px;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      font-size: 13px;
+      transition: all 0.15s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .btn-primary {
+      background: #0A66C2;
+      color: white;
+      box-shadow: 0 1px 3px rgba(10,102,194,0.3);
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      background: #004182;
+      box-shadow: 0 2px 6px rgba(10,102,194,0.4);
+      transform: translateY(-0.5px);
+    }
+
+    .btn-secondary {
+      background: white;
+      color: #555;
+      padding: 6px 12px;
+      font-size: 11px;
+      border: 1px solid #d0d0d0;
+      font-weight: 500;
+    }
+
+    .btn-secondary:hover {
+      background: #f3f2ef;
+      border-color: #bbb;
+    }
+
+    .btn-danger {
+      background: #dc2626;
+      color: white;
+      box-shadow: 0 1px 3px rgba(220,38,38,0.3);
+    }
+
+    .btn-danger:hover:not(:disabled) {
+      background: #b91c1c;
+    }
+
+    .btn-outline-danger {
+      background: white;
+      color: #dc2626;
+      border: 1.5px solid #fca5a5;
+      padding: 7px 14px;
+      font-size: 12px;
+    }
+
+    .btn-outline-danger:hover {
+      background: #fef2f2;
+      border-color: #dc2626;
+    }
+
+    .btn-icon {
+      background: transparent;
+      color: #666;
+      padding: 6px;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .btn-icon:hover {
+      background: #f3f2ef;
+      color: #333;
+    }
+
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none !important;
+    }
+
+    /* ═══════════════ MAIN VIEW ═══════════════ */
+    .main-view {
+      display: none;
+      min-height: 100vh;
+      flex-direction: column;
+    }
+
+    .app-header {
+      background: white;
+      padding: 12px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #e5e5e5;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .app-header-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .app-logo {
+      width: 32px;
+      height: 32px;
+      background: #0A66C2;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .app-logo svg {
+      width: 16px;
+      height: 16px;
+      fill: none;
+      stroke: white;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .app-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: #1a1a1a;
+      letter-spacing: -0.2px;
+      line-height: 1.2;
+    }
+
+    .app-user {
+      font-size: 10px;
+      color: #888;
+      font-weight: 400;
+      margin-top: 1px;
+    }
+
+    .app-header-right {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .user-avatar {
+      width: 26px;
+      height: 26px;
+      background: #e8f0fe;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      font-weight: 700;
+      color: #0A66C2;
+      border: 1.5px solid #cce0f5;
+    }
+
+    /* ═══════════════ TABS ═══════════════ */
+    .tabs-bar {
+      display: flex;
+      gap: 2px;
+      padding: 8px 16px;
+      background: white;
+      border-bottom: 1px solid #e5e5e5;
+    }
+
+    .tab-btn {
+      padding: 7px 14px;
+      background: none;
+      border: none;
+      font-weight: 600;
+      color: #888;
+      cursor: pointer;
+      border-radius: 6px;
+      font-size: 12px;
+      transition: all 0.15s;
+      position: relative;
+    }
+
+    .tab-btn.active {
+      color: #0A66C2;
+      background: #e8f0fe;
+    }
+
+    .tab-btn:hover:not(.active) {
+      color: #555;
+      background: #f5f5f5;
+    }
+
+    /* ═══════════════ FORM STYLES ═══════════════ */
+    .view-content {
+      display: none;
+      padding: 14px 16px 20px;
+    }
+
+    .view-content.active {
+      display: block;
+    }
+
+    .form-group {
+      margin-bottom: 14px;
+    }
+
+    .form-group label {
+      display: block;
+      font-weight: 600;
+      color: #444;
+      margin-bottom: 5px;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+
+    .form-group label .req {
+      color: #dc2626;
+      font-weight: 700;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      padding: 9px 12px;
+      border: 1.5px solid #d5d5d5;
+      border-radius: 8px;
+      font-size: 12px;
+      font-family: inherit;
+      transition: all 0.2s;
+      background: #fafafa;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: #0A66C2;
+      box-shadow: 0 0 0 3px rgba(10,102,194,0.1);
+      background: white;
+    }
+
+    input::placeholder, textarea::placeholder {
+      color: #aaa;
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 60px;
+    }
+
+    /* ═══════════════ MESSAGES ═══════════════ */
+    .message {
+      padding: 10px 12px;
+      border-radius: 8px;
+      margin-bottom: 12px;
+      font-size: 12px;
+      font-weight: 500;
+    }
+
+    .success-message {
+      background: #ecfdf5;
+      color: #065f46;
+      border: 1px solid #a7f3d0;
+    }
+
+    .error-message {
+      background: #fef2f2;
+      color: #991b1b;
+      border: 1px solid #fecaca;
+    }
+
+    /* ═══════════════ TICKET LIST ═══════════════ */
+    .list-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .ticket-count {
+      font-size: 12px;
+      color: #888;
+      font-weight: 500;
+    }
+
+    .ticket-list {
+      max-height: 380px;
+      overflow-y: auto;
+    }
+
+    .ticket-list::-webkit-scrollbar {
+      width: 4px;
+    }
+    .ticket-list::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .ticket-list::-webkit-scrollbar-thumb {
+      background: #d0d0d0;
+      border-radius: 4px;
+    }
+
+    .ticket-card {
+      background: white;
+      border-radius: 10px;
+      padding: 12px 14px;
+      margin-bottom: 8px;
+      border: 1px solid #e8e8e8;
+      transition: all 0.15s ease;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+      cursor: pointer;
+    }
+
+    .ticket-card:hover {
+      border-color: #cce0f5;
+      box-shadow: 0 2px 8px rgba(10,102,194,0.08);
+    }
+
+    .ticket-card:active {
+      transform: scale(0.995);
+    }
+
+    .ticket-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 6px;
+    }
+
+    .ticket-id {
+      font-weight: 700;
+      color: #0A66C2;
+      font-size: 10px;
+      font-family: 'SF Mono', SFMono-Regular, Menlo, Consolas, monospace;
+      background: #e8f0fe;
+      padding: 2px 6px;
+      border-radius: 4px;
+      letter-spacing: 0.2px;
+    }
+
+    .ticket-name {
+      font-weight: 600;
+      color: #1a1a1a;
+      font-size: 13px;
+      line-height: 1.3;
+      margin-bottom: 8px;
+    }
+
+    .ticket-details {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .ticket-detail-item {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 11px;
+      color: #777;
+    }
+
+    .ticket-detail-item svg {
+      width: 12px;
+      height: 12px;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      flex-shrink: 0;
+    }
+
+    .ticket-detail-divider {
+      width: 3px;
+      height: 3px;
+      background: #ccc;
+      border-radius: 50%;
+    }
+
+    /* Status badges */
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 8px;
+      border-radius: 12px;
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.2px;
+    }
+
+    .status-badge::before {
+      content: '';
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .status-backlog { 
+      background: #f3f4f6; 
+      color: #4b5563;
+    }
+    .status-backlog::before { background: #9ca3af; }
+
+    .status-in-progress { 
+      background: #fef3c7; 
+      color: #92400e;
+    }
+    .status-in-progress::before { background: #f59e0b; }
+
+    .status-completed { 
+      background: #d1fae5; 
+      color: #065f46;
+    }
+    .status-completed::before { background: #10b981; }
+
+    .status-rejected { 
+      background: #fee2e2; 
+      color: #991b1b;
+    }
+    .status-rejected::before { background: #ef4444; }
+
+    /* Priority */
+    .priority-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      display: inline-block;
+      flex-shrink: 0;
+    }
+
+    .priority-dot-low { background: #10b981; }
+    .priority-dot-medium { background: #f59e0b; }
+    .priority-dot-high { background: #ef4444; }
+    .priority-dot-critical { background: #7c2d12; box-shadow: 0 0 0 2px rgba(124,45,18,0.2); }
+
+    .priority-text { font-weight: 500; }
+    .priority-high { color: #dc2626; }
+    .priority-medium { color: #d97706; }
+    .priority-low { color: #059669; }
+    .priority-critical { color: #7c2d12; font-weight: 700; }
+
+    .rejection-note {
+      margin-top: 8px;
+      padding: 8px 10px;
+      background: #fef2f2;
+      border-radius: 6px;
+      border-left: 3px solid #ef4444;
+      font-size: 11px;
+      color: #991b1b;
+      line-height: 1.4;
+    }
+
+    .rejection-note strong {
+      font-weight: 700;
+    }
+
+    /* ═══════════════ EMPTY STATE ═══════════════ */
+    .empty-state {
+      text-align: center;
+      padding: 40px 20px;
+      color: #888;
+    }
+
+    .empty-state-icon {
+      width: 56px;
+      height: 56px;
+      background: #f3f2ef;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 14px;
+    }
+
+    .empty-state-icon svg {
+      width: 24px;
+      height: 24px;
+      stroke: #bbb;
+      fill: none;
+      stroke-width: 1.5;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .empty-state h3 {
+      font-size: 14px;
+      font-weight: 600;
+      color: #555;
+      margin-bottom: 4px;
+    }
+
+    .empty-state p {
+      font-size: 12px;
+      color: #999;
+    }
+
+    /* ═══════════════ PAGINATION ═══════════════ */
+    .pagination {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+      margin-top: 14px;
+      padding-top: 14px;
+      border-top: 1px solid #e8e8e8;
+    }
+
+    .pagination-btn {
+      padding: 5px 10px;
+      background: white;
+      border: 1px solid #d0d0d0;
+      border-radius: 6px;
+      font-size: 11px;
+      cursor: pointer;
+      color: #555;
+      font-weight: 500;
+      transition: all 0.15s;
+    }
+
+    .pagination-btn:hover:not(:disabled) {
+      background: #f3f2ef;
+      border-color: #bbb;
+    }
+
+    .pagination-btn:disabled {
+      opacity: 0.35;
+      cursor: not-allowed;
+    }
+
+    .pagination-info {
+      font-size: 11px;
+      color: #888;
+      font-weight: 500;
+    }
+
+    /* ═══════════════ PREVIEW SECTION (compact) ═══════════════ */
+    .preview-section {
+      margin-bottom: 14px;
+      display: none;
+    }
+
+    .preview-label {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 6px;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+      color: #444;
+    }
+
+    .preview-dot {
+      width: 7px;
+      height: 7px;
+      background: #0A66C2;
+      border-radius: 50%;
+    }
+
+    .preview-frame-name {
+      font-weight: 400;
+      color: #888;
+      text-transform: none;
+      letter-spacing: 0;
+    }
+
+    .preview-box {
+      background: #fafafa;
+      border: 1.5px dashed #ddd;
+      border-radius: 8px;
+      padding: 8px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 120px;
+      overflow: hidden;
+    }
+
+    .preview-box img {
+      max-width: 100%;
+      max-height: 104px;
+      border-radius: 4px;
+      object-fit: contain;
+    }
+
+    /* ═══════════════ FILE KEY BANNER ═══════════════ */
+    .file-key-banner {
+      background: linear-gradient(135deg, #fffbeb, #fef3c7);
+      border: 1px solid #fde68a;
+      border-radius: 10px;
+      padding: 14px;
+      margin-bottom: 14px;
+      display: none;
+    }
+
+    .file-key-banner .banner-title {
+      font-size: 12px;
+      font-weight: 700;
+      color: #b45309;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .file-key-banner .banner-title svg {
+      width: 14px;
+      height: 14px;
+      stroke: #b45309;
+      fill: none;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .file-key-banner p {
+      font-size: 11px;
+      color: #78350f;
+      margin-bottom: 10px;
+      line-height: 1.5;
+    }
+
+    .file-key-input-row {
+      display: flex;
+      gap: 6px;
+    }
+
+    .file-key-banner input {
+      flex: 1;
+      padding: 7px 10px;
+      font-size: 11px;
+      border: 1.5px solid #e5d5a0;
+      border-radius: 6px;
+      background: white;
+    }
+
+    .file-key-banner input:focus {
+      border-color: #0A66C2;
+      box-shadow: 0 0 0 2px rgba(10,102,194,0.15);
+    }
+
+    .file-key-banner .btn {
+      white-space: nowrap;
+      font-size: 11px;
+      padding: 7px 14px;
+      border-radius: 6px;
+    }
+
+    .file-key-error {
+      color: #dc2626;
+      font-size: 11px;
+      margin-top: 6px;
+      display: none;
+    }
+
+    /* ═══════════════ DETAIL VIEW ═══════════════ */
+    .detail-view {
+      display: none;
+      padding: 14px 16px 20px;
+    }
+
+    .detail-view.active {
+      display: block;
+    }
+
+    .detail-back {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 12px;
+      font-weight: 500;
+      color: #0A66C2;
+      cursor: pointer;
+      background: none;
+      border: none;
+      padding: 4px 0;
+      margin-bottom: 12px;
+    }
+
+    .detail-back:hover {
+      color: #004182;
+    }
+
+    .detail-back svg {
+      width: 14px;
+      height: 14px;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 2.5;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .detail-card {
+      background: white;
+      border-radius: 12px;
+      border: 1px solid #e5e5e5;
+      overflow: hidden;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+    }
+
+    .detail-card-top {
+      padding: 16px;
+      border-bottom: 1px solid #f0f0f0;
+    }
+
+    .detail-card-top-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .detail-component-name {
+      font-size: 16px;
+      font-weight: 700;
+      color: #1a1a1a;
+      line-height: 1.3;
+      margin-bottom: 4px;
+    }
+
+    .detail-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      padding: 14px 16px;
+      border-bottom: 1px solid #f0f0f0;
+    }
+
+    .detail-field {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .detail-field-label {
+      font-size: 10px;
+      font-weight: 600;
+      color: #999;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+
+    .detail-field-value {
+      font-size: 12px;
+      font-weight: 500;
+      color: #333;
+    }
+
+    .detail-section {
+      padding: 14px 16px;
+      border-bottom: 1px solid #f0f0f0;
+    }
+
+    .detail-section-label {
+      font-size: 10px;
+      font-weight: 600;
+      color: #999;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      margin-bottom: 6px;
+    }
+
+    .detail-section-value {
+      font-size: 12px;
+      color: #444;
+      line-height: 1.5;
+    }
+
+    .detail-figma-link {
+      color: #0A66C2;
+      text-decoration: none;
+      font-size: 12px;
+      font-weight: 500;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      word-break: break-all;
+    }
+
+    .detail-figma-link svg {
+      width: 12px;
+      height: 12px;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      flex-shrink: 0;
+    }
+
+    .detail-preview-box {
+      background: #fafafa;
+      border: 1.5px dashed #e0e0e0;
+      border-radius: 8px;
+      padding: 8px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100px;
+      overflow: hidden;
+      margin-top: 6px;
+    }
+
+    .detail-preview-box img {
+      max-width: 100%;
+      max-height: 84px;
+      border-radius: 4px;
+      object-fit: contain;
+    }
+
+    .detail-actions {
+      padding: 14px 16px;
+      display: flex;
+      gap: 8px;
+    }
+
+    .detail-actions .btn {
+      flex: 1;
+      font-size: 12px;
+      padding: 9px 12px;
+    }
+
+    /* ═══════════════ DELETE CONFIRM DIALOG ═══════════════ */
+    .confirm-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.4);
+      backdrop-filter: blur(3px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      display: none;
+    }
+
+    .confirm-overlay.active {
+      display: flex;
+    }
+
+    .confirm-dialog {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      width: 300px;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+      text-align: center;
+    }
+
+    .confirm-dialog-icon {
+      width: 44px;
+      height: 44px;
+      background: #fef2f2;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 12px;
+    }
+
+    .confirm-dialog-icon svg {
+      width: 20px;
+      height: 20px;
+      stroke: #dc2626;
+      fill: none;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .confirm-dialog h3 {
+      font-size: 14px;
+      font-weight: 600;
+      color: #1a1a1a;
+      margin-bottom: 6px;
+    }
+
+    .confirm-dialog p {
+      font-size: 12px;
+      color: #666;
+      margin-bottom: 16px;
+      line-height: 1.4;
+    }
+
+    .confirm-dialog-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .confirm-dialog-actions .btn {
+      flex: 1;
+      font-size: 12px;
+      padding: 9px 12px;
+    }
+
+    /* ═══════════════ EDIT MODE BANNER ═══════════════ */
+    .edit-banner {
+      background: #e8f0fe;
+      border: 1px solid #cce0f5;
+      border-radius: 8px;
+      padding: 10px 12px;
+      margin-bottom: 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .edit-banner-text {
+      font-size: 12px;
+      font-weight: 600;
+      color: #0A66C2;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .edit-banner-text svg {
+      width: 14px;
+      height: 14px;
+      stroke: #0A66C2;
+      fill: none;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .edit-banner .btn-cancel {
+      font-size: 11px;
+      color: #666;
+      background: white;
+      border: 1px solid #d0d0d0;
+      padding: 4px 10px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: 500;
+    }
+
+    .edit-banner .btn-cancel:hover {
+      background: #f5f5f5;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ═══════════════ LOGIN VIEW ═══════════════ -->
+  <div id="loginView" class="login-view">
+    <div class="login-hero">
+      <div class="login-logo">
+        <svg viewBox="0 0 24 24">
+          <rect x="3" y="3" width="7" height="7" rx="1.5"/>
+          <rect x="14" y="3" width="7" height="7" rx="1.5"/>
+          <rect x="3" y="14" width="7" height="7" rx="1.5"/>
+          <rect x="14" y="14" width="7" height="7" rx="1.5"/>
+        </svg>
+      </div>
+      <h1>Component Request Manager</h1>
+      <p>Design System Request Portal</p>
+    </div>
+
+    <div class="login-body">
+      <div class="login-card">
+        <h2>Welcome back</h2>
+        <p class="login-desc">Sign in with your whitelisted email to continue</p>
+
+        <form id="loginForm">
+          <div class="form-group">
+            <label>Email Address</label>
+            <input 
+              type="email" 
+              id="loginEmail" 
+              placeholder="your.name@company.com"
+              required
+            />
+          </div>
+          <div id="loginMessage"></div>
+          <button type="submit" id="loginBtn" class="btn btn-primary" style="width: 100%; padding: 11px 16px;">
+            Sign In
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <div class="login-footer">
+      <p>Only whitelisted emails can access this portal.<br/>Contact your Design System admin for access.</p>
+    </div>
+  </div>
+
+  <!-- ═══════════════ MAIN VIEW ═══════════════ -->
+  <div id="mainView" class="main-view">
+    <div class="app-header">
+      <div class="app-header-left">
+        <div class="app-logo">
+          <svg viewBox="0 0 24 24">
+            <rect x="3" y="3" width="7" height="7" rx="1.5"/>
+            <rect x="14" y="3" width="7" height="7" rx="1.5"/>
+            <rect x="3" y="14" width="7" height="7" rx="1.5"/>
+            <rect x="14" y="14" width="7" height="7" rx="1.5"/>
+          </svg>
+        </div>
+        <div>
+          <div class="app-title">Component Request Manager</div>
+          <div class="app-user" id="userEmail"></div>
+        </div>
+      </div>
+      <div class="app-header-right">
+        <div class="user-avatar" id="userAvatar"></div>
+        <button id="logoutBtn" class="btn-icon" title="Sign out">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+            <polyline points="16 17 21 12 16 7"/>
+            <line x1="21" y1="12" x2="9" y2="12"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <div class="tabs-bar">
+      <button class="tab-btn active" data-view="create" id="tabCreate">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 4px; vertical-align: -1px;">
+          <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+        </svg>
+        Create
+      </button>
+      <button class="tab-btn" data-view="list" id="tabList">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 4px; vertical-align: -1px;">
+          <line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/>
+          <line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/>
+        </svg>
+        My Requests
+      </button>
+    </div>
+
+    <!-- ═══════════ CREATE VIEW ═══════════ -->
+    <div id="createView" class="view-content active">
+      <!-- Edit mode banner (hidden by default) -->
+      <div id="editBanner" class="edit-banner" style="display: none;">
+        <span class="edit-banner-text">
+          <svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+          Editing Request <span id="editingTicketId"></span>
+        </span>
+        <button class="btn-cancel" id="cancelEditBtn">Cancel</button>
+      </div>
+
+      <!-- File Key Prompt Banner -->
+      <div id="fileKeyBanner" class="file-key-banner">
+        <div class="banner-title">
+          <svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          File key not detected
+        </div>
+        <p>Figma couldn't auto-detect this file's key. Paste the file's <strong>share link once</strong> and all future frame links will work automatically.</p>
+        <div class="file-key-input-row">
+          <input type="text" id="fileKeyInput" placeholder="https://www.figma.com/design/ABC123..." />
+          <button type="button" id="saveFileKeyBtn" class="btn btn-primary">Save</button>
+        </div>
+        <div id="fileKeyError" class="file-key-error"></div>
+      </div>
+
+      <form id="requestForm">
+        <div class="form-group">
+          <label>Component Name <span class="req">*</span></label>
+          <input type="text" id="component_name" placeholder="e.g., Button, Card, Modal" required />
+        </div>
+
+        <div class="form-group">
+          <label>Project <span class="req">*</span></label>
+          <select id="project_name" required>
+            <option value="">Select a project...</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Figma Link (Auto-generated) <span class="req">*</span></label>
+          <input type="url" id="figma_link" placeholder="Select a frame in Figma..." readonly style="background: #f0f0f0; color: #888; cursor: not-allowed;" required />
+        </div>
+
+        <!-- Preview Section -->
+        <div id="previewSection" class="preview-section">
+          <div class="preview-label">
+            <span class="preview-dot"></span>
+            Preview
+            <span id="previewFrameName" class="preview-frame-name"></span>
+          </div>
+          <div class="preview-box">
+            <img id="previewImage" src="" alt="Frame Preview" />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Reason / Description <span class="req">*</span></label>
+          <textarea id="reason" placeholder="Describe why you need this component..." required></textarea>
+        </div>
+
+        <div class="form-group">
+          <label>Priority <span class="req">*</span></label>
+          <select id="priority" required>
+            <option value="Low">Low</option>
+            <option value="Medium" selected>Medium</option>
+            <option value="High">High</option>
+            <option value="Critical">Critical</option>
+          </select>
+        </div>
+
+        <div id="message"></div>
+
+        <button type="submit" id="submitBtn" class="btn btn-primary" style="width: 100%; padding: 11px 16px;">
+          Submit Request
+        </button>
+      </form>
+    </div>
+
+    <!-- ═══════════ LIST VIEW ═══════════ -->
+    <div id="listView" class="view-content">
+      <div class="list-header">
+        <div class="ticket-count" id="ticketCount">0 requests</div>
+        <button id="refreshBtn" class="btn-secondary btn" style="border-radius: 6px;">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/>
+            <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
+          </svg>
+          Refresh
+        </button>
+      </div>
+      <div id="ticketList" class="ticket-list"></div>
+      <div id="pagination" class="pagination" style="display: none;">
+        <button id="prevBtn" class="pagination-btn">&larr; Prev</button>
+        <span class="pagination-info" id="pageInfo">Page 1 of 1</span>
+        <button id="nextBtn" class="pagination-btn">Next &rarr;</button>
+      </div>
+    </div>
+
+    <!-- ═══════════ DETAIL VIEW ═══════════ -->
+    <div id="detailView" class="detail-view"></div>
+  </div>
+
+  <!-- ═══════════ DELETE CONFIRMATION ═══════════ -->
+  <div id="deleteConfirm" class="confirm-overlay">
+    <div class="confirm-dialog">
+      <div class="confirm-dialog-icon">
+        <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
+      </div>
+      <h3>Delete Request?</h3>
+      <p>This action cannot be undone. The request will be permanently removed.</p>
+      <div class="confirm-dialog-actions">
+        <button class="btn btn-secondary" id="cancelDeleteBtn">Cancel</button>
+        <button class="btn btn-danger" id="confirmDeleteBtn">Delete</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const PORTAL_URL = 'https://yjibvifufhhvxjvujpdq.supabase.co';
+    const ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlqaWJ2aWZ1ZmhodnhqdnVqcGRxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzEyNjU5ODAsImV4cCI6MjA4Njg0MTk4MH0.FS1pjkI7Fs2BytX_Wxzh1Ky-X2jVqLU0Urk-DrcEkuQ';
+    
+    let currentUser = null;
+    let projects = [];
+    let allTickets = [];
+    let currentPage = 1;
+    const ITEMS_PER_PAGE = 10;
+    let currentPreviewImage = null;
+
+    // Edit mode state
+    let editingTicket = null; // the ticket object being edited
+
+    // Delete state
+    let deletingTicketId = null;
+
+    // Plugin Storage API wrapper
+    const storage = {
+      get: (key) => {
+        return new Promise((resolve) => {
+          const handler = (event) => {
+            if (event.data.pluginMessage?.type === 'storage-get-result' && event.data.pluginMessage.key === key) {
+              window.removeEventListener('message', handler);
+              resolve(event.data.pluginMessage.value);
+            }
+          };
+          window.addEventListener('message', handler);
+          parent.postMessage({ pluginMessage: { type: 'storage-get', key } }, '*');
+        });
+      },
+      set: (key, value) => {
+        return new Promise((resolve) => {
+          const handler = (event) => {
+            if (event.data.pluginMessage?.type === 'storage-set-result' && event.data.pluginMessage.key === key) {
+              window.removeEventListener('message', handler);
+              resolve();
+            }
+          };
+          window.addEventListener('message', handler);
+          parent.postMessage({ pluginMessage: { type: 'storage-set', key, value } }, '*');
+        });
+      },
+      remove: (key) => {
+        return new Promise((resolve) => {
+          const handler = (event) => {
+            if (event.data.pluginMessage?.type === 'storage-remove-result' && event.data.pluginMessage.key === key) {
+              window.removeEventListener('message', handler);
+              resolve();
+            }
+          };
+          window.addEventListener('message', handler);
+          parent.postMessage({ pluginMessage: { type: 'storage-remove', key } }, '*');
+        });
+      }
+    };
+
+    function getUserInitials(email) {
+      if (!email) return '?';
+      const parts = email.split('@')[0].split('.');
+      if (parts.length >= 2) return (parts[0][0] + parts[1][0]).toUpperCase();
+      return email[0].toUpperCase();
+    }
+
+    // ═══════════════ VIEW SWITCHING ═══════════════
+    function switchToView(viewName) {
+      // viewName: 'create', 'list', 'detail'
+      document.querySelectorAll('.view-content, .detail-view').forEach(v => v.classList.remove('active'));
+      
+      if (viewName === 'create') {
+        document.getElementById('createView').classList.add('active');
+        document.querySelectorAll('.tab-btn').forEach(t => t.classList.remove('active'));
+        document.getElementById('tabCreate').classList.add('active');
+      } else if (viewName === 'list') {
+        document.getElementById('listView').classList.add('active');
+        document.querySelectorAll('.tab-btn').forEach(t => t.classList.remove('active'));
+        document.getElementById('tabList').classList.add('active');
+      } else if (viewName === 'detail') {
+        document.getElementById('detailView').classList.add('active');
+        // Keep the "My Requests" tab highlighted
+        document.querySelectorAll('.tab-btn').forEach(t => t.classList.remove('active'));
+        document.getElementById('tabList').classList.add('active');
+      }
+    }
+
+    // ═══════════════ CONNECTION TEST ═══════════════
+    async function testServerConnection() {
+      try {
+        const response = await fetch(
+          `${PORTAL_URL}/functions/v1/make-server-3a357b9b/health`,
+          { headers: { 'Authorization': `Bearer ${ANON_KEY}` } }
+        );
+        const data = await response.json();
+        console.log('Server connection OK:', data);
+        return true;
+      } catch (error) {
+        console.error('Server connection failed:', error);
+        return false;
+      }
+    }
+
+    // ═══════════════ AUTH ═══════════════
+    window.addEventListener('load', async () => {
+      await testServerConnection();
+      const savedUser = await storage.get('pluginUser');
+      if (savedUser) {
+        currentUser = JSON.parse(savedUser);
+        await loadProjects();
+        showMainView();
+        loadTickets();
+      }
+    });
+
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = document.getElementById('loginEmail').value.trim();
+      const loginBtn = document.getElementById('loginBtn');
+      const loginMessage = document.getElementById('loginMessage');
+
+      loginBtn.disabled = true;
+      loginBtn.textContent = 'Signing In...';
+      loginMessage.innerHTML = '';
+
+      try {
+        const response = await fetch(
+          `${PORTAL_URL}/functions/v1/make-server-3a357b9b/auth/signin`,
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${ANON_KEY}`
+            },
+            body: JSON.stringify({ email })
+          }
+        );
+
+        const data = await response.json();
+
+        if (response.ok) {
+          currentUser = { email };
+          await storage.set('pluginUser', JSON.stringify(currentUser));
+          await loadProjects();
+          showMainView();
+        } else {
+          const errorMessage = data.error || data.message || 'Login failed.';
+          loginMessage.innerHTML = `<div class="message error-message">${errorMessage}</div>`;
+        }
+      } catch (error) {
+        loginMessage.innerHTML = `<div class="message error-message">Failed to connect to server.</div>`;
+      } finally {
+        loginBtn.disabled = false;
+        loginBtn.textContent = 'Sign In';
+      }
+    });
+
+    document.getElementById('logoutBtn').addEventListener('click', async () => {
+      await storage.remove('pluginUser');
+      currentUser = null;
+      document.getElementById('loginView').style.display = 'flex';
+      document.getElementById('mainView').style.display = 'none';
+      document.getElementById('loginEmail').value = '';
+    });
+
+    function showMainView() {
+      document.getElementById('loginView').style.display = 'none';
+      const mainView = document.getElementById('mainView');
+      mainView.style.display = 'flex';
+      document.getElementById('userEmail').textContent = currentUser.email;
+      document.getElementById('userAvatar').textContent = getUserInitials(currentUser.email);
+    }
+
+    // ═══════════════ TABS ═══════════════
+    document.querySelectorAll('.tab-btn').forEach(tab => {
+      tab.addEventListener('click', () => {
+        const view = tab.dataset.view;
+        // Cancel edit mode if switching tabs
+        if (editingTicket) cancelEditMode();
+        switchToView(view);
+        if (view === 'list') loadTickets();
+      });
+    });
+
+    // ═══════════════ PROJECTS ═══════════════
+    async function loadProjects() {
+      try {
+        const response = await fetch(
+          `${PORTAL_URL}/functions/v1/make-server-3a357b9b/admin/projects`,
+          { headers: { 'Authorization': `Bearer ${ANON_KEY}` } }
+        );
+        const data = await response.json();
+        if (response.ok) {
+          projects = data.projects;
+          populateProjectDropdown();
+        }
+      } catch (error) {
+        console.error('Failed to load projects:', error);
+      }
+    }
+
+    function populateProjectDropdown() {
+      const select = document.getElementById('project_name');
+      select.innerHTML = '<option value="">Select a project...</option>';
+      projects.forEach(project => {
+        const option = document.createElement('option');
+        option.value = project.name;
+        option.textContent = project.name;
+        select.appendChild(option);
+      });
+      const otherOption = document.createElement('option');
+      otherOption.value = 'Other';
+      otherOption.textContent = 'Other';
+      select.appendChild(otherOption);
+    }
+
+    // ═══════════════ FORM SUBMIT (CREATE & EDIT) ═══════════════
+    document.getElementById('requestForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const component_name = document.getElementById('component_name').value.trim();
+      const project_name = document.getElementById('project_name').value;
+      const figma_link = document.getElementById('figma_link').value.trim();
+      const reason = document.getElementById('reason').value.trim();
+      const priority = document.getElementById('priority').value;
+
+      if (!component_name || !project_name || !figma_link || !reason) {
+        showMessage('Please fill in all required fields. Make sure a Figma frame is selected.', true);
+        return;
+      }
+
+      const submitBtn = document.getElementById('submitBtn');
+      submitBtn.disabled = true;
+
+      const isEditing = !!editingTicket;
+      submitBtn.textContent = isEditing ? 'Updating...' : 'Submitting...';
+
+      try {
+        let response;
+        if (isEditing) {
+          // UPDATE existing ticket
+          response = await fetch(
+            `${PORTAL_URL}/functions/v1/make-server-3a357b9b/tickets/${editingTicket.ticket_id}`,
+            {
+              method: 'PUT',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${ANON_KEY}`
+              },
+              body: JSON.stringify({
+                requester_email: currentUser.email,
+                component_name,
+                project_name,
+                figma_link,
+                reason,
+                priority
+              })
+            }
+          );
+        } else {
+          // CREATE new ticket
+          response = await fetch(
+            `${PORTAL_URL}/functions/v1/make-server-3a357b9b/tickets`,
+            {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${ANON_KEY}`
+              },
+              body: JSON.stringify({
+                requester_email: currentUser.email,
+                component_name,
+                project_name,
+                figma_link,
+                reason,
+                priority,
+                preview_image: currentPreviewImage
+              })
+            }
+          );
+        }
+
+        const data = await response.json();
+
+        if (response.ok) {
+          if (isEditing) {
+            showMessage(`Request ${editingTicket.ticket_id} updated successfully!`);
+            cancelEditMode();
+            // Switch to list and refresh
+            await loadTickets();
+            switchToView('list');
+          } else {
+            showMessage(`Request submitted! Ticket ID: ${data.ticket.ticket_id}`);
+            document.getElementById('requestForm').reset();
+            document.getElementById('project_name').value = '';
+            currentPreviewImage = null;
+            document.getElementById('previewSection').style.display = 'none';
+            document.getElementById('component_name').value = '';
+            document.getElementById('figma_link').value = '';
+          }
+        } else {
+          showMessage(`${data.error || 'Operation failed'}`, true);
+        }
+      } catch (error) {
+        showMessage('Failed to connect to server', true);
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = isEditing ? 'Update Request' : 'Submit Request';
+      }
+    });
+
+    function showMessage(text, isError = false) {
+      const messageDiv = document.getElementById('message');
+      messageDiv.innerHTML = `<div class="${isError ? 'error-message' : 'success-message'} message">${text}</div>`;
+      setTimeout(() => { messageDiv.innerHTML = ''; }, 5000);
+    }
+
+    // ═══════════════ EDIT MODE ═══════════════
+    function enterEditMode(ticket) {
+      editingTicket = ticket;
+
+      // Show edit banner
+      document.getElementById('editBanner').style.display = 'flex';
+      document.getElementById('editingTicketId').textContent = ticket.ticket_id;
+
+      // Populate form fields
+      document.getElementById('component_name').value = ticket.component_name || '';
+      document.getElementById('project_name').value = ticket.project_name || '';
+      document.getElementById('figma_link').value = ticket.figma_link || '';
+      document.getElementById('reason').value = ticket.reason || '';
+      document.getElementById('priority').value = ticket.priority || 'Medium';
+
+      // Change submit button text
+      document.getElementById('submitBtn').textContent = 'Update Request';
+
+      // Switch to create view
+      switchToView('create');
+    }
+
+    function cancelEditMode() {
+      editingTicket = null;
+      document.getElementById('editBanner').style.display = 'none';
+      document.getElementById('submitBtn').textContent = 'Submit Request';
+
+      // Clear the form
+      document.getElementById('requestForm').reset();
+      document.getElementById('component_name').value = '';
+      document.getElementById('project_name').value = '';
+      document.getElementById('figma_link').value = '';
+      document.getElementById('reason').value = '';
+      document.getElementById('priority').value = 'Medium';
+    }
+
+    document.getElementById('cancelEditBtn').addEventListener('click', () => {
+      cancelEditMode();
+      switchToView('list');
+    });
+
+    // ═══════════════ DELETE ═══════════════
+    function showDeleteConfirm(ticketId) {
+      deletingTicketId = ticketId;
+      document.getElementById('deleteConfirm').classList.add('active');
+    }
+
+    document.getElementById('cancelDeleteBtn').addEventListener('click', () => {
+      deletingTicketId = null;
+      document.getElementById('deleteConfirm').classList.remove('active');
+    });
+
+    document.getElementById('confirmDeleteBtn').addEventListener('click', async () => {
+      if (!deletingTicketId) return;
+
+      const confirmBtn = document.getElementById('confirmDeleteBtn');
+      confirmBtn.disabled = true;
+      confirmBtn.textContent = 'Deleting...';
+
+      try {
+        const response = await fetch(
+          `${PORTAL_URL}/functions/v1/make-server-3a357b9b/tickets/${deletingTicketId}`,
+          {
+            method: 'DELETE',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${ANON_KEY}`
+            },
+            body: JSON.stringify({ requester_email: currentUser.email })
+          }
+        );
+
+        if (response.ok) {
+          document.getElementById('deleteConfirm').classList.remove('active');
+          parent.postMessage({ pluginMessage: { type: 'notify', message: 'Request deleted successfully' } }, '*');
+          await loadTickets();
+          switchToView('list');
+        } else {
+          const data = await response.json();
+          parent.postMessage({ pluginMessage: { type: 'error', message: data.error || 'Delete failed' } }, '*');
+        }
+      } catch (error) {
+        parent.postMessage({ pluginMessage: { type: 'error', message: 'Failed to connect to server' } }, '*');
+      } finally {
+        confirmBtn.disabled = false;
+        confirmBtn.textContent = 'Delete';
+        deletingTicketId = null;
+      }
+    });
+
+    // ═══════════════ TICKET LIST ═══════════════
+    async function loadTickets() {
+      const ticketList = document.getElementById('ticketList');
+      ticketList.innerHTML = `
+        <div class="empty-state">
+          <div class="empty-state-icon">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          </div>
+          <p>Loading requests...</p>
+        </div>
+      `;
+
+      try {
+        const response = await fetch(
+          `${PORTAL_URL}/functions/v1/make-server-3a357b9b/tickets`,
+          { headers: { 'Authorization': `Bearer ${ANON_KEY}` } }
+        );
+        const data = await response.json();
+
+        if (response.ok) {
+          allTickets = data.tickets.filter(t => t.requester_email === currentUser.email);
+          allTickets.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+          currentPage = 1;
+          renderTickets();
+        }
+      } catch (error) {
+        ticketList.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-state-icon">
+              <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+            </div>
+            <h3>Connection failed</h3>
+            <p>Could not load requests</p>
+          </div>
+        `;
+      }
+    }
+
+    function renderTickets() {
+      const ticketList = document.getElementById('ticketList');
+      const ticketCount = document.getElementById('ticketCount');
+      const pagination = document.getElementById('pagination');
+      const pageInfo = document.getElementById('pageInfo');
+      const prevBtn = document.getElementById('prevBtn');
+      const nextBtn = document.getElementById('nextBtn');
+
+      ticketCount.textContent = `${allTickets.length} request${allTickets.length !== 1 ? 's' : ''}`;
+
+      if (allTickets.length === 0) {
+        ticketList.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-state-icon">
+              <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            </div>
+            <h3>No requests yet</h3>
+            <p>Select a frame and create your first request</p>
+          </div>
+        `;
+        pagination.style.display = 'none';
+        return;
+      }
+
+      const totalPages = Math.ceil(allTickets.length / ITEMS_PER_PAGE);
+      const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+      const endIndex = startIndex + ITEMS_PER_PAGE;
+      const ticketsToShow = allTickets.slice(startIndex, endIndex);
+
+      ticketList.innerHTML = ticketsToShow.map((ticket, idx) => {
+        const statusClass = ticket.status.toLowerCase().replace(/\s+/g, '-');
+        const priorityClass = ticket.priority.toLowerCase();
+        const dateStr = new Date(ticket.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+        const globalIdx = startIndex + idx;
+        
+        return `
+          <div class="ticket-card" data-ticket-index="${globalIdx}">
+            <div class="ticket-card-header">
+              <span class="ticket-id">${ticket.ticket_id}</span>
+              <span class="status-badge status-${statusClass}">${ticket.status}</span>
+            </div>
+            <div class="ticket-name">${ticket.component_name}</div>
+            <div class="ticket-details">
+              <span class="ticket-detail-item">
+                <svg viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+                ${ticket.project_name}
+              </span>
+              <span class="ticket-detail-divider"></span>
+              <span class="ticket-detail-item">
+                <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                ${dateStr}
+              </span>
+              <span class="ticket-detail-divider"></span>
+              <span class="ticket-detail-item">
+                <span class="priority-dot priority-dot-${priorityClass}"></span>
+                <span class="priority-text priority-${priorityClass}">${ticket.priority}</span>
+              </span>
+            </div>
+            ${ticket.rejection_comment ? `
+              <div class="rejection-note">
+                <strong>Rejected:</strong> ${ticket.rejection_comment}
+              </div>
+            ` : ''}
+          </div>
+        `;
+      }).join('');
+
+      // Add click handlers to ticket cards
+      ticketList.querySelectorAll('.ticket-card').forEach(card => {
+        card.addEventListener('click', () => {
+          const idx = parseInt(card.getAttribute('data-ticket-index'));
+          showTicketDetail(allTickets[idx]);
+        });
+      });
+
+      if (totalPages > 1) {
+        pagination.style.display = 'flex';
+        pageInfo.textContent = `Page ${currentPage} of ${totalPages}`;
+        prevBtn.disabled = currentPage === 1;
+        nextBtn.disabled = currentPage === totalPages;
+      } else {
+        pagination.style.display = 'none';
+      }
+    }
+
+    // ═══════════════ TICKET DETAIL VIEW ═══════════════
+    function showTicketDetail(ticket) {
+      const detailView = document.getElementById('detailView');
+      const statusClass = ticket.status.toLowerCase().replace(/\s+/g, '-');
+      const priorityClass = ticket.priority.toLowerCase();
+      const dateStr = new Date(ticket.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+
+      detailView.innerHTML = `
+        <button class="detail-back" id="detailBackBtn">
+          <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+          Back to list
+        </button>
+
+        <div class="detail-card">
+          <div class="detail-card-top">
+            <div class="detail-card-top-row">
+              <span class="ticket-id">${ticket.ticket_id}</span>
+              <span class="status-badge status-${statusClass}">${ticket.status}</span>
+            </div>
+            <div class="detail-component-name">${ticket.component_name}</div>
+          </div>
+
+          <div class="detail-grid">
+            <div class="detail-field">
+              <span class="detail-field-label">Project</span>
+              <span class="detail-field-value">${ticket.project_name}</span>
+            </div>
+            <div class="detail-field">
+              <span class="detail-field-label">Priority</span>
+              <span class="detail-field-value">
+                <span class="priority-dot priority-dot-${priorityClass}" style="display: inline-block; vertical-align: middle; margin-right: 4px;"></span>
+                <span class="priority-${priorityClass}">${ticket.priority}</span>
+              </span>
+            </div>
+            <div class="detail-field">
+              <span class="detail-field-label">Date</span>
+              <span class="detail-field-value">${dateStr}</span>
+            </div>
+            <div class="detail-field">
+              <span class="detail-field-label">Status</span>
+              <span class="detail-field-value">${ticket.status}</span>
+            </div>
+          </div>
+
+          ${ticket.reason ? `
+            <div class="detail-section">
+              <div class="detail-section-label">Description</div>
+              <div class="detail-section-value">${ticket.reason}</div>
+            </div>
+          ` : ''}
+
+          ${ticket.figma_link ? `
+            <div class="detail-section">
+              <div class="detail-section-label">Figma Link</div>
+              <a href="${ticket.figma_link}" target="_blank" class="detail-figma-link">
+                <svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                Open in Figma
+              </a>
+            </div>
+          ` : ''}
+
+          ${ticket.preview_image ? `
+            <div class="detail-section">
+              <div class="detail-section-label">Preview</div>
+              <div class="detail-preview-box">
+                <img src="${ticket.preview_image}" alt="Preview" />
+              </div>
+            </div>
+          ` : ''}
+
+          ${ticket.rejection_comment ? `
+            <div class="detail-section" style="border-bottom: none;">
+              <div class="rejection-note">
+                <strong>Rejected:</strong> ${ticket.rejection_comment}
+              </div>
+            </div>
+          ` : ''}
+
+          <div class="detail-actions">
+            <button class="btn btn-primary" id="detailEditBtn">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+              </svg>
+              Edit
+            </button>
+            <button class="btn btn-outline-danger" id="detailDeleteBtn">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+              </svg>
+              Delete
+            </button>
+          </div>
+        </div>
+      `;
+
+      // Wire up detail buttons
+      document.getElementById('detailBackBtn').addEventListener('click', () => {
+        switchToView('list');
+      });
+
+      document.getElementById('detailEditBtn').addEventListener('click', () => {
+        enterEditMode(ticket);
+      });
+
+      document.getElementById('detailDeleteBtn').addEventListener('click', () => {
+        showDeleteConfirm(ticket.ticket_id);
+      });
+
+      switchToView('detail');
+    }
+
+    // ═══════════════ PAGINATION ═══════════════
+    document.getElementById('prevBtn').addEventListener('click', () => {
+      if (currentPage > 1) { currentPage--; renderTickets(); }
+    });
+
+    document.getElementById('nextBtn').addEventListener('click', () => {
+      const totalPages = Math.ceil(allTickets.length / ITEMS_PER_PAGE);
+      if (currentPage < totalPages) { currentPage++; renderTickets(); }
+    });
+
+    document.getElementById('refreshBtn').addEventListener('click', loadTickets);
+
+    // ═══════════════ FIGMA MESSAGES ═══════════════
+    window.addEventListener('message', (event) => {
+      const msg = event.data.pluginMessage;
+      if (!msg) return;
+      
+      if (msg.type === 'selection-updated') {
+        // Hide file key banner
+        const fileKeyBanner = document.getElementById('fileKeyBanner');
+        if (fileKeyBanner) fileKeyBanner.style.display = 'none';
+        
+        // DO NOT auto-fill component name — leave it for the user to type
+        // Only auto-fill the Figma link
+        const figmaLinkInput = document.getElementById('figma_link');
+        if (figmaLinkInput) figmaLinkInput.value = msg.link || '';
+        
+        // Store preview image
+        currentPreviewImage = msg.image;
+        
+        // Show preview section with frame name
+        const previewSection = document.getElementById('previewSection');
+        const previewFrameName = document.getElementById('previewFrameName');
+        const previewImage = document.getElementById('previewImage');
+        
+        if (previewSection && previewFrameName && previewImage && msg.image) {
+          previewSection.style.display = 'block';
+          previewFrameName.textContent = msg.name || '';
+          previewImage.src = msg.image;
+        }
+      }
+      
+      if (msg.type === 'no-selection') {
+        currentPreviewImage = null;
+        const figmaLinkInput = document.getElementById('figma_link');
+        if (figmaLinkInput) figmaLinkInput.value = '';
+        const previewSection = document.getElementById('previewSection');
+        if (previewSection) previewSection.style.display = 'none';
+        const fileKeyBanner = document.getElementById('fileKeyBanner');
+        if (fileKeyBanner) fileKeyBanner.style.display = 'none';
+      }
+
+      if (msg.type === 'need-file-key') {
+        // DO NOT auto-fill component name
+        currentPreviewImage = msg.image;
+        const previewSection = document.getElementById('previewSection');
+        const previewFrameName = document.getElementById('previewFrameName');
+        const previewImage = document.getElementById('previewImage');
+        if (previewSection && previewFrameName && previewImage && msg.image) {
+          previewSection.style.display = 'block';
+          previewFrameName.textContent = msg.name || '';
+          previewImage.src = msg.image;
+        }
+        const figmaLinkInput = document.getElementById('figma_link');
+        if (figmaLinkInput) figmaLinkInput.value = '';
+        const fileKeyBanner = document.getElementById('fileKeyBanner');
+        if (fileKeyBanner) fileKeyBanner.style.display = 'block';
+      }
+    });
+
+    // ═══════════════ FILE KEY ═══════════════
+    function extractFileKey(input) {
+      const trimmed = input.trim();
+      const urlMatch = trimmed.match(/figma\.com\/(?:design|file)\/([A-Za-z0-9]+)/);
+      if (urlMatch) return urlMatch[1];
+      if (/^[A-Za-z0-9]{10,}$/.test(trimmed)) return trimmed;
+      return null;
+    }
+
+    document.getElementById('saveFileKeyBtn').addEventListener('click', () => {
+      const fileKeyInput = document.getElementById('fileKeyInput');
+      const fileKeyError = document.getElementById('fileKeyError');
+      const raw = fileKeyInput.value.trim();
+
+      if (!raw) {
+        fileKeyError.textContent = 'Please paste the Figma file link.';
+        fileKeyError.style.display = 'block';
+        return;
+      }
+
+      const key = extractFileKey(raw);
+      if (!key) {
+        fileKeyError.textContent = 'Could not find a file key. Paste a link like: https://www.figma.com/design/ABC123/...';
+        fileKeyError.style.display = 'block';
+        return;
+      }
+
+      fileKeyError.style.display = 'none';
+      parent.postMessage({ pluginMessage: { type: 'set-file-key', fileKey: key } }, '*');
+      document.getElementById('fileKeyBanner').style.display = 'none';
+      fileKeyInput.value = '';
+    });
+  </script>
+</body>
+</html>

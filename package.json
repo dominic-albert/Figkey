@@ -1,0 +1,12 @@
+{
+  "name": "design-system-request-portal-plugin",
+  "version": "1.0.0",
+  "description": "Figma plugin for Design System Request Portal",
+  "scripts": {
+    "build": "tsc"
+  },
+  "devDependencies": {
+    "@figma/plugin-typings": "^1.79.0",
+    "typescript": "^5.3.3"
+  }
+}
